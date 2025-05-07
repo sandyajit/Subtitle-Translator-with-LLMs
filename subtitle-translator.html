@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-API Subtitle Translator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #222;
+            --primary-hover: #111;
+            --bg-color: #fff;
+            --text-color: #222;
+            --input-bg: #f5f5f5;
+            --input-border: #ddd;
+            --card-bg: #fff;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .dark-mode {
+            --primary-color: #fff;
+            --primary-hover: #eee;
+            --bg-color: #181a1b;
+            --text-color: #eee;
+            --input-bg: #232323;
+            --input-border: #444;
+            --card-bg: #181a1b;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            width: 100%;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 24px 0;
+            flex: 1;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--input-border);
+        }
+        .top-bar h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .controls {
+            display: flex;
+            gap: 8px;
+        }
+        .control-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 5px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .control-btn:hover {
+            background-color: #ededed;
+        }
+        .dark-mode .control-btn:hover {
+            background-color: #232323;
+        }
+        .instructions {
+            text-align: center;
+            margin-bottom: 18px;
+            font-size: 0.95rem;
+            color: #888;
+        }
+        form {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 18px;
+            border: 1px solid var(--input-border);
+        }
+        .form-group { margin-bottom: 13px; }
+        .form-label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        .radio-group { display: flex; gap: 12px; margin-bottom: 8px; }
+        .radio-label { display: flex; align-items: center; gap: 4px; }
+        textarea, input[type="text"], input[type="password"], input[type="number"], select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.97rem;
+            transition: border 0.2s;
+        }
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #bbb;
+        }
+        .api-key-container { position: relative; }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+        .dropzone {
+            border: 2px dashed var(--input-border);
+            border-radius: 4px;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            background-color: var(--input-bg);
+            transition: border-color 0.3s;
+        }
+        .dropzone:hover { border-color: #bbb; }
+        .dz-message { color: var(--text-color); }
+        .dz-message i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: #888;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+        }
+        .note {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 4px;
+        }
+        .dark-mode .note { color: #666; }
+        .settings {
+            margin-bottom: 16px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .settings summary {
+            padding: 8px 12px;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+            color: var(--text-color);
+        }
+        .dark-mode .settings summary {
+            background-color: #232323;
+        }
+        .settings summary:hover {
+            background-color: #ededed;
+        }
+        .dark-mode .settings summary:hover {
+            background-color: #232323;
+        }
+        .settings-content {
+            padding: 12px;
+            border-top: 1px solid var(--input-border);
+        }
+        .button {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #222;
+            color: #fff;
+        }
+        .button.primary-button {
+            background: #222;
+            color: #fff;
+        }
+        .button.primary-button:hover {
+            background: #111;
+        }
+        .submit-container { display: flex; justify-content: center; }
+        .shortcut-hint { font-size: 0.75rem; opacity: 0.6; }
+        .progress-container { margin-top: 18px; display: none; }
+        .progress-bar {
+            height: 8px;
+            background-color: #ededed;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress {
+            height: 100%;
+            background-color: #222;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .progress-text {
+            text-align: center;
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+        .progress-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        .dark-mode .progress-details { color: #666; }
+        .download-link {
+            text-align: center;
+            margin: 18px 0;
+        }
+        .download-link a {
+            display: inline-block;
+            padding: 9px 18px;
+            background-color: #222;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .download-link a:hover {
+            background-color: #111;
+        }
+        .error-message {
+            color: #fff;
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+        .footer {
+            text-align: center;
+            padding: 18px;
+            margin-top: 18px;
+            border-top: 1px solid var(--input-border);
+            font-size: 0.85rem;
+            color: #888;
+        }
+        .footer a {
+            color: #222;
+            text-decoration: underline;
+        }
+        .donate-section { margin-top: 8px; }
+        .donate-button,
+        .donate-button:visited,
+        .donate-button:active {
+            color: #fff !important;
+            background: #333;
+            border-radius: 4px;
+            padding: 5px 14px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            border: none;
+            display: inline-block;
+        }
+        .donate-button:hover {
+            background: #111;
+        }
+        .warning {
+            background-color: #f5f5f5;
+            border-left: 3px solid #bbb;
+            padding: 7px 10px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        .api-model-group {
+            margin-bottom: 12px;
+            padding: 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            background-color: #fafafa;
+        }
+        .dark-mode .api-model-group {
+            background-color: #232323;
+        }
+        .dark-mode .dropzone {
+            background-color: var(--input-bg);
+            border-color: var(--input-border);
+        }
+        .dark-mode #live-input,
+        .dark-mode #live-output {
+            background: var(--input-bg) !important;
+            color: var(--text-color) !important;
+        }
+        /* Live translation box backgrounds for both modes */
+        #live-input, #live-output {
+            background: #f5f5f5;
+            color: #222;
+        }
+        .dark-mode #live-input, .dark-mode #live-output {
+            background: #232323 !important;
+            color: #eee !important;
+        }
+        /* Remove all colored icons */
+        .dz-message i, .download-link a i, .top-bar .fa, .top-bar .fas {
+            color: #888 !important;
+        }
+        /* Live translation table styles */
+        #live-translation-table-container {
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+        #live-translation-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            font-size: 0.98em;
+        }
+        #live-translation-table th, #live-translation-table td {
+            border: 1px solid var(--input-border);
+            padding: 8px 10px;
+            vertical-align: top;
+            text-align: left;
+        }
+        #live-translation-table th {
+            background: #f5f5f5;
+            color: #888;
+            font-weight: 600;
+        }
+        .dark-mode #live-translation-table th {
+            background: #232323;
+            color: #aaa;
+        }
+        .rtl-cell {
+            direction: rtl;
+            text-align: right;
+            font-family: inherit;
+        }
+        .ltr-cell {
+            direction: ltr;
+            text-align: left;
+            font-family: inherit;
+        }
+        .translation-error {
+            background: #fff0f0;
+            color: #c00;
+        }
+        .dark-mode .translation-error {
+            background: #2a1818;
+            color: #ff8888;
+        }
+        .correction-btn {
+            background: #eee;
+            color: #222;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 0.95em;
+            padding: 2px 10px;
+            cursor: pointer;
+            margin-left: 4px;
+            margin-right: 4px;
+            transition: background 0.2s;
+        }
+        .correction-btn:hover {
+            background: #ddd;
+        }
+        .dark-mode .correction-btn {
+            background: #232323;
+            color: #eee;
+            border: 1px solid #444;
+        }
+        .dark-mode .correction-btn:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with controls -->
+        <div class="top-bar">
+             <h1 id="page-title">Subtitle Translator</h1>
+             <div class="controls">
+                 <button id="clear-memory-button" class="control-btn" aria-label="Clear translation memory" title="Clear translation memory">
+                     <i class="fa fa-trash"></i>
+                 </button>
+                 <button id="themeToggle" class="control-btn" aria-label="Toggle theme" title="Toggle light/dark theme">
+                     <i class="fas fa-moon"></i>
+                 </button>
+            </div>
+        </div>
+
+        <form id="translate-form">
+            <!-- Input Method Selection -->
+            <div class="form-group">
+                <label class="form-label">Input Method:</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="input_method" value="file" checked> Upload File
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="input_method" value="text"> Paste Text
+                    </label>
+                </div>
+            </div>
+
+            <!-- File Input Area -->
+            <div id="file-input" class="form-group input-section">
+                <label class="form-label">Upload Subtitle File (SRT, VTT, SSA, ASS):</label>
+                <div id="dropzone-upload" class="dropzone">
+                    <div class="dz-message">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & drop subtitle file here<br>or click to browse</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Input Area -->
+            <div id="text-input" class="form-group input-section" style="display: none;">
+                <label class="form-label" for="srt_text">Paste SRT Content:</label>
+                <textarea id="srt_text" name="srt_text" rows="6" placeholder="Paste your SRT content here..."></textarea>
+            </div>
+
+            <!-- New: YouTube URL Input -->
+            <div class="form-group">
+                <label class="form-label" for="youtube_url">YouTube Video URL (auto-fetch subtitles):</label>
+                <input type="text" id="youtube_url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
+                <p class="note">Paste a YouTube link to auto-download English subtitles for translation.</p>
+            </div>
+
+            <!-- API Selection -->
+            <div class="form-group">
+                <label class="form-label">Select API Provider:</label>
+                <select id="api_provider" name="api_provider">
+                    <option value="gemini">Google Gemini</option>
+                    <option value="openai">Open AI</option>
+                    <option value="deepseek">Deepseek</option>
+                    <option value="custom">Custom API</option>
+                </select>
+            </div>
+
+            <!-- API Key Sections (Conditional Display) -->
+            <div id="api-keys-section">
+                <!-- Gemini API -->
+                <div class="api-model-group" id="gemini-api-section">
+                    <div class="form-group">
+                        <label class="form-label" for="gemini_api_key">Gemini API Key:</label>
+                        <div class="api-key-container">
+                            <input type="password" id="gemini_api_key" name="gemini_api_key" placeholder="Enter your Gemini API key">
+                            <button type="button" class="toggle-password" data-for="gemini_api_key">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember_gemini_key" name="remember_gemini_key">
+                            <label for="remember_gemini_key">Remember key</label>
+                        </div>
+                        <p class="note">Get your API key from <a href='https://aistudio.google.com/app/apikey' target='_blank'>Google AI Studio</a>.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="gemini_model">Gemini Model:</label>
+                        <select id="gemini_model" name="gemini_model">
+                            <option value="gemini-2.0-flash" selected>Gemini 2.0 Flash</option>
+                            <option value="gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash</option>
+                            <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+                            <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro Experimental</option>
+                            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                        </select>
+                        <p class="note" style="color:#c00;">
+                            If you get quota errors, select "Gemini 2.5 Pro Experimental" or "Gemini 2.0 Flash".
+                        </p>
+                    </div>
+                </div>
+
+                <!-- OpenAI API -->
+                <div class="api-model-group" id="openai-api-section" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label" for="openai_api_key">OpenAI API Key:</label>
+                        <div class="api-key-container">
+                            <input type="password" id="openai_api_key" name="openai_api_key" placeholder="Enter your OpenAI API key">
+                            <button type="button" class="toggle-password" data-for="openai_api_key">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember_openai_key" name="remember_openai_key">
+                            <label for="remember_openai_key">Remember key</label>
+                        </div>
+                        <p class="note">Get your API key from <a href='https://platform.openai.com/api-keys' target='_blank'>OpenAI Platform</a>.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="openai_model">OpenAI Model:</label>
+                        <select id="openai_model" name="openai_model">
+                            <option value="gpt-4o" selected>GPT-4o</option>
+                            <option value="gpt-4o-mini">GPT-4o Mini</option>
+                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Deepseek API -->
+                <div class="api-model-group" id="deepseek-api-section" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label" for="deepseek_api_key">Deepseek API Key:</label>
+                        <div class="api-key-container">
+                            <input type="password" id="deepseek_api_key" name="deepseek_api_key" placeholder="Enter your Deepseek API key">
+                            <button type="button" class="toggle-password" data-for="deepseek_api_key">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember_deepseek_key" name="remember_deepseek_key">
+                            <label for="remember_deepseek_key">Remember key</label>
+                        </div>
+                        <p class="note">Get your API key from <a href='https://platform.deepseek.com' target='_blank'>Deepseek Platform</a>.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="deepseek_model">Deepseek Model:</label>
+                        <select id="deepseek_model" name="deepseek_model">
+                            <option value="deepseek-chat" selected>Deepseek Chat</option>
+                            <option value="deepseek-reasoner">Deepseek Reason</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Custom API -->
+                <div class="api-model-group" id="custom-api-section" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label" for="custom_api_url">Custom API Endpoint:</label>
+                        <input type="text" id="custom_api_url" name="custom_api_url" placeholder="https://your.api/endpoint">
+                        <p class="note">Endpoint must be OpenAI-compatible (chat/completions) or similar.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="custom_api_key">Custom API Key:</label>
+                        <div class="api-key-container">
+                            <input type="password" id="custom_api_key" name="custom_api_key" placeholder="Enter your custom API key">
+                            <button type="button" class="toggle-password" data-for="custom_api_key">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember_custom_key" name="remember_custom_key">
+                            <label for="remember_custom_key">Remember key</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="custom_model">Custom Model Name:</label>
+                        <input type="text" id="custom_model" name="custom_model" placeholder="e.g., llama-3, your-model-name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="custom_extra_headers">Extra Headers (JSON):</label>
+                        <textarea id="custom_extra_headers" name="custom_extra_headers" rows="2" placeholder='{"Custom-Header":"value"}'></textarea>
+                        <p class="note">Optional: Add extra headers as JSON.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Language -->
+            <div class="form-group">
+                <label class="form-label" for="lang-input">Target Language:</label>
+                <input type="text" id="lang-input" name="lang" value="Persian (Farsi)" placeholder="e.g., Spanish, French, Japanese" required>
+            </div>
+
+            <!-- Advanced Settings -->
+            <details class="settings">
+                <summary><span id="advanced-settings-summary-text">Advanced Settings</span> <i class="summary-icon fas fa-chevron-down"></i></summary>
+                <div class="settings-content">
+                    <p class="warning">
+                        ⚠️ Adjusting these settings can affect performance, cost, and translation quality.
+                    </p>
+
+                    <div class="form-group">
+                        <label class="form-label" for="temperature">Temperature:</label>
+                        <input type="number" id="temperature" name="temperature" min="0" max="2" step="0.1" value="0.7" placeholder="e.g., 0.7">
+                        <p class="note">Controls randomness (0.0-2.0). Higher values = more creative/random.</p>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="useProxyCheckbox" name="useProxyCheckbox">
+                        <label for="useProxyCheckbox">Use Proxy</label>
+                        <p class="note">Enable if direct API access is blocked (e.g., sanctioned regions).</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="base_delay">Base Delay (ms):</label>
+                        <input type="number" id="base_delay" name="base_delay" min="100" value="1000" placeholder="1000" required>
+                        <p class="note">Delay between successful chunk requests.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chunk_count">Number of Chunks:</label>
+                        <input type="number" id="chunk_count" name="chunk_count" min="1" max="100" value="20" placeholder="20" required>
+                        <p class="note">Split subtitles into this many parts (1-100).</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="translation_prompt">System Prompt / Instructions:</label>
+                        <textarea id="translation_prompt" name="translation_prompt" rows="8">
+                        شما یک متخصص حرفه‌ای ترجمه زیرنویس هستید که به چندین زبان تسلط دارید. وظیفه اصلی شما ترجمه دقیق و طبیعی متن زیرنویس است به‌گونه‌ای که ساختار فایل زیرنویس (شامل شماره‌گذاری، زمان‌بندی و فرمت‌بندی) کاملاً حفظ شود.
+
+                        مهم:
+                        - فقط فایل زیرنویس ترجمه‌شده را در همان قالب ورودی خروجی بده و هیچ توضیح، ابزار، یا اطلاعات اضافه‌ای ننویس.
+                        - اگر مدل شما از قابلیت tool call یا function call (مانند Deepseek) پشتیبانی می‌کند، این قابلیت‌ها را نادیده بگیر و فقط فایل زیرنویس ترجمه‌شده را به صورت متن ساده، با حفظ تمام زمان‌بندی‌ها و فرمت‌بندی، خروجی بده.
+                        - به هیچ عنوان شماره‌گذاری یا زمان‌بندی زیرنویس را حذف یا تغییر نده.
+                        - هیچ توضیح، تفسیر یا خروجی اضافه‌ای (از جمله JSON یا tool call) ننویس.
+
+                        دستورالعمل ترجمه:
+                        - هر بخش زیرنویس را به صورت طبیعی و خلاصه ترجمه کن تا برای خواندن روی صفحه مناسب باشد.
+                        - هنگام ترجمه به فارسی یا سایر زبان‌های راست‌به‌چپ، متن را به‌درستی راست‌چین کن.
+                        - معنی و لحن احساسی دیالوگ را حفظ کن.
+                        - اسامی انگلیسی را ترجمه نکن؛ آن‌ها را به همان صورت اصلی درون گیومه انگلیسی ("") قرار بده تا چینش متن حفظ شود.
+                        - اصطلاحات و ارجاعات فرهنگی را متناسب با مخاطب زبان مقصد تطبیق بده.
+                        - اگر یک عبارت چند ترجمه ممکن داشت، مناسب‌ترین ترجمه را با توجه به موقعیت تصویری و سبک گفتار شخصیت انتخاب کن.
+                        - اگر با محتوای نامشخص یا مبهم مواجه شدی، توضیح کوتاهی در پرانتز () بعد از ترجمه بنویس.
+                        - لحن رسمی یا غیررسمی را مطابق متن اصلی رعایت کن.
+
+                        قالب خروجی:
+                        - فقط فایل زیرنویس ترجمه‌شده را با حفظ تمام زمان‌بندی، شماره‌گذاری و فرمت‌بندی خروجی بده.
+                        - هیچ ابزار، توضیح یا خروجی اضافه‌ای ننویس.
+                        - هرگونه نشانه‌گذاری یا فرمت خاص (مانند ایتالیک) را حفظ کن.
+
+                        اگر اصطلاحات فنی خاصی وجود داشت، ترجمه دقیق و قابل فهم برای عموم ارائه بده. ترجمه باید هم از نظر زبانی صحیح باشد و هم برای نمایش سریع روی صفحه مناسب باشد.
+
+                        اگر زیرنویس ورودی به صورت خودکار توسط یوتیوب ساخته شده و دارای اشتباهات نگارشی، کلمات ناقص یا جملات بی‌معنی بود، ابتدا متن هر بخش را به صورت صحیح و قابل فهم بازنویسی کن و سپس به زبان مقصد ترجمه کن. کلمات اشتباه یا ناقص را اصلاح کن و جملات نامفهوم را تا حد امکان قابل فهم و روان کن.
+                        </textarea>
+                        <p class="note">Instructions for the AI model.</p>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Submit Button -->
+            <div class="submit-container">
+                <button id="submit-button" type="submit" class="button primary-button">
+                    <span class="button-text">Translate</span>
+                    <span class="shortcut-hint">(Ctrl+Enter)</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Live Translation Table -->
+        <div id="live-translation-table-container" style="display:none;">
+            <table id="live-translation-table">
+                <thead>
+                    <tr>
+                        <th style="width:40%;">Source</th>
+                        <th style="width:50%;">Translation</th>
+                        <th style="width:10%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically inserted -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Progress Display -->
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="progress-text" id="progress-text">0% Complete</div>
+            <div class="progress-details">
+                <span id="chunk-status">Processing chunk: 0/0</span>
+                <span id="time-estimate">Estimated time: calculating...</span>
+            </div>
+        </div>
+
+        <!-- Download Link Area -->
+        <div class="download-link" id="download-link"></div>
+
+        <!-- Error Message Area -->
+        <div class="error-message" id="error-message"></div>
+
+        <!-- Manual Retry Area -->
+        <div id="manual-retry-section" style="display:none; margin: 20px 0;">
+            <h3 style="font-size:1.1rem; margin-bottom:10px;">Manual Retry for Failed Chunks</h3>
+            <div id="retry-chunks-list"></div>
+            <button id="retry-failed-chunks-btn" class="button primary-button" style="margin-top:10px;">Retry Failed Chunks</button>
+            <p style="font-size:0.9rem; color:#888; margin-top:8px;">You can select a different API/model before retrying.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>If you ever feel unloved, just know I love you - Created with ❤️ for subtitle translation.</p>
+        <div class="donate-section">
+            <a href="https://reymit.ir/ho3seintork" class="donate-button" id="donateButton" target="_blank" rel="noopener">Support This Project</a>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rtl-detect@1.0.3/rtl-detect.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rtlify@0.2.2/rtlify.min.js"></script>
+    <script>
+        // DOM Elements
+        const apiProviderSelect = document.getElementById('api_provider');
+        const geminiApiSection = document.getElementById('gemini-api-section');
+        const openaiApiSection = document.getElementById('openai-api-section');
+        const deepseekApiSection = document.getElementById('deepseek-api-section');
+        const customApiSection = document.getElementById('custom-api-section');
+        const themeToggle = document.getElementById('themeToggle');
+        const fileMethodRadio = document.querySelector('input[value="file"]');
+        const textMethodRadio = document.querySelector('input[value="text"]');
+        const fileInputSection = document.getElementById('file-input');
+        const textInputSection = document.getElementById('text-input');
+        const translateForm = document.getElementById('translate-form');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress');
+        const progressText = document.getElementById('progress-text');
+        const chunkStatus = document.getElementById('chunk-status');
+        const timeEstimate = document.getElementById('time-estimate');
+        const downloadLink = document.getElementById('download-link');
+        const errorMessage = document.getElementById('error-message');
+        const clearMemoryButton = document.getElementById('clear-memory-button');
+        // Live translation elements
+        const liveBox = document.getElementById('live-translation-box');
+        const liveInput = document.getElementById('live-input');
+        const liveOutput = document.getElementById('live-output');
+        // Live translation table elements
+        const liveTableContainer = document.getElementById('live-translation-table-container');
+        const liveTable = document.getElementById('live-translation-table');
+        const liveTableBody = liveTable ? liveTable.querySelector('tbody') : null;
+
+        // Initialize Dropzone
+        Dropzone.autoDiscover = false;
+        const myDropzone = new Dropzone("#dropzone-upload", {
+            url: "#", // Not actually uploading to a server
+            autoProcessQueue: false,
+            maxFiles: 1,
+            acceptedFiles: ".srt,.vtt,.ssa,.ass",
+            addRemoveLinks: true,
+            dictDefaultMessage: "Drop files here or click to upload",
+        });
+
+        // Theme Toggle
+        function toggleTheme() {
+            const isDarkMode = document.body.classList.toggle('dark-mode');
+            themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false');
+        }
+
+        // Toggle API sections visibility based on selected provider
+        apiProviderSelect.addEventListener('change', function() {
+            const provider = this.value;
+            geminiApiSection.style.display = provider === 'gemini' ? 'block' : 'none';
+            openaiApiSection.style.display = provider === 'openai' ? 'block' : 'none';
+            deepseekApiSection.style.display = provider === 'deepseek' ? 'block' : 'none';
+            customApiSection.style.display = provider === 'custom' ? 'block' : 'none';
+        });
+
+        // Toggle password visibility for API keys
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-for');
+                const input = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+
+        // Toggle input method
+        fileMethodRadio.addEventListener('change', function() {
+            if (this.checked) {
+                fileInputSection.style.display = 'block';
+                textInputSection.style.display = 'none';
+            }
+        });
+
+        textMethodRadio.addEventListener('change', function() {
+            if (this.checked) {
+                fileInputSection.style.display = 'none';
+                textInputSection.style.display = 'block';
+            }
+        });
+
+        // Helper to display errors
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            progressContainer.style.display = 'none';
+        }
+
+        // Helper: Read file as text
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+
+        // Helper: Split SRT into chunks (by lines, not timestamps)
+        function splitSrtIntoChunks(srt, chunkCount) {
+            const lines = srt.split(/\r?\n/).filter(l => l.trim() !== '');
+            const chunkSize = Math.ceil(lines.length / chunkCount);
+            const chunks = [];
+            for (let i = 0; i < lines.length; i += chunkSize) {
+                chunks.push(lines.slice(i, i + chunkSize).join('\n'));
+            }
+            return chunks;
+        }
+
+        // Helper: Merge translated chunks for SRT output (no extra newlines, no separators)
+        function mergeChunks(chunks) {
+            // Join all chunks as-is, preserving SRT structure, and remove extra blank lines between chunks
+            let merged = chunks.map(c => {
+                if (Array.isArray(c)) {
+                    return c.map(part => typeof part === "string" ? part : (part?.text || "")).join("\n").replace(/\r\n/g, '\n').trim();
+                } else if (typeof c === "object" && c !== null) {
+                    return (c.text || "").replace(/\r\n/g, '\n').trim();
+                }
+                return (c || '').replace(/\r\n/g, '\n').trim();
+            }).join('\n\n'); // SRT blocks are separated by double newlines
+
+            // Remove accidental BOM or non-printable chars at start
+            merged = merged.replace(/^\uFEFF/, '');
+
+            // Remove extra blank lines at start/end
+            merged = merged.replace(/^\s+/, '').replace(/\s+$/, '');
+
+            // Ensure file ends with a single newline
+            merged += '\n';
+
+            return merged;
+        }
+
+        /**
+         * Fix and normalize SRT structure:
+         * - Remove duplicate/invalid numbering
+         * - Ensure each block has: number, time, text (possibly multiline), blank line
+         * - Remove empty blocks and renumber sequentially
+         * - Merge blocks with the same timecode (if any)
+         * - Remove lines that look like numbers but are not part of a valid block
+         */
+        function fixSrtStructure(srtText) {
+            // Split into lines and clean up
+            let lines = srtText.replace(/\r\n/g, '\n').split('\n').map(l => l.trimEnd());
+
+            // Parse blocks: find timecode lines and group accordingly
+            let blocks = [];
+            let current = [];
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                if (line.match(new RegExp("^\\d{2}:\\d{2}:\\d{2},\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2},\\d{3}$"))) {
+                    if (current.length > 0) blocks.push(current);
+                    current = [line];
+                } else if (line === '' && current.length > 0) {
+                    blocks.push(current);
+                    current = [];
+                } else if (line !== '') {
+                    current.push(line);
+                }
+            }
+            if (current.length > 0) blocks.push(current);
+
+            // Merge blocks with the same timecode (fixes duplicate time blocks)
+            let mergedBlocks = [];
+            let seenTimes = new Set();
+            for (let block of blocks) {
+                let timeIdx = block.findIndex(l => l.match(new RegExp("^\\d{2}:\\d{2}:\\d{2},\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2},\\d{3}$")));
+                if (timeIdx === -1) continue;
+                let time = block[timeIdx].trim();
+                let text = block.slice(timeIdx + 1).filter(l => l && !/^\d+$/.test(l));
+                if (seenTimes.has(time)) {
+                    let prev = mergedBlocks.find(b => b.time === time);
+                    if (prev) prev.text = prev.text.concat(text);
+                } else {
+                    mergedBlocks.push({ time, text: text.slice() });
+                    seenTimes.add(time);
+                }
+            }
+
+            // Remove empty blocks and renumber
+            let fixedBlocks = [];
+            let num = 1;
+            for (let b of mergedBlocks) {
+                if (!b.text.length || b.text.every(l => !l.trim())) continue;
+                fixedBlocks.push([
+                    String(num++),
+                    b.time,
+                    ...b.text
+                ].join('\n'));
+            }
+
+            return fixedBlocks.join('\n\n') + '\n';
+        }
+
+        // Helper: Detect if a string is mostly RTL (e.g. Persian/Arabic/Hebrew)
+        function isRtlText(text) {
+            if (window.rtlDetect && rtlDetect.isRtlLang) {
+                return rtlDetect.isRtlLang('fa') || rtlDetect.isRtlLang('ar') || rtlDetect.isRtlLang('he');
+            }
+            return /[\u0600-\u06FF\u0750-\u077F\u0590-\u05FF]/.test(text);
+        }
+
+        // Helper: Apply RTL formatting to SRT text blocks if needed
+        function applyRtlToSrt(srtText) {
+            let blocks = srtText.split(/\r?\n\r?\n/);
+            let outBlocks = blocks.map(block => {
+                let lines = block.split('\n');
+                let idx = lines.findIndex(l => l.match(new RegExp("^\\d{2}:\\d{2}:\\d{2},\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2},\\d{3}$")));
+                if (idx === -1) return block;
+                let textLines = lines.slice(idx + 1);
+                let rtlCount = textLines.filter(isRtlText).length;
+                if (textLines.length > 0 && rtlCount / textLines.length > 0.5) {
+                    let rtlTextLines = textLines.map(line => {
+                        let processed = line.replace(/([A-Za-z0-9_]+)/g, '\u202A$1\u202C');
+                        return '\u202B' + processed + '\u202C';
+                    });
+                    return [...lines.slice(0, idx + 1), ...rtlTextLines].join('\n');
+                }
+                return block;
+            });
+            return outBlocks.join('\n\n');
+        }
+
+        // Helper: Detect translation error (simple heuristic)
+        function isTranslationError(text) {
+            if (!text) return true;
+            if (text.startsWith('[ERROR]')) return true;
+            if (/error|quota|unexpected|unsupported|failed|limit/i.test(text)) return true;
+            return false;
+        }
+
+        // Helper: Escape HTML for safe display
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                })[m];
+            });
+        }
+
+        // Render the live translation table
+        function renderLiveTranslationTable(sourceChunks, translatedChunks, onCorrect) {
+            if (!liveTableBody) return; // Prevent null reference error
+            liveTableBody.innerHTML = '';
+            for (let i = 0; i < sourceChunks.length; i++) {
+                const src = sourceChunks[i] || '';
+                const trn = translatedChunks[i] || '';
+                const isRtl = isRtlText(trn || src);
+                const error = isTranslationError(trn);
+                const tr = document.createElement('tr');
+                const tdSrc = document.createElement('td');
+                tdSrc.className = isRtlText(src) ? 'rtl-cell' : 'ltr-cell';
+                tdSrc.innerHTML = `<pre style="margin:0;background:none;border:none;padding:0;font-family:inherit;">${escapeHtml(src)}</pre>`;
+                const tdTrn = document.createElement('td');
+                tdTrn.className = isRtl ? 'rtl-cell' : 'ltr-cell';
+                if (error) tdTrn.classList.add('translation-error');
+                tdTrn.innerHTML = `<pre style="margin:0;background:none;border:none;padding:0;font-family:inherit;">${escapeHtml(trn)}</pre>`;
+                const tdAct = document.createElement('td');
+                if (error) {
+                    const btn = document.createElement('button');
+                    btn.className = 'correction-btn';
+                    btn.textContent = 'Retry';
+                    btn.onclick = () => onCorrect(i);
+                    tdAct.appendChild(btn);
+                } else {
+                    tdAct.innerHTML = '';
+                }
+                tr.appendChild(tdSrc);
+                tr.appendChild(tdTrn);
+                tr.appendChild(tdAct);
+                liveTableBody.appendChild(tr);
+            }
+        }
+
+        // Main translation logic (sequential, show one chunk at a time)
+        async function realTranslation() {
+            try {
+                let srtContent = '';
+                if (fileMethodRadio.checked) {
+                    if (myDropzone.files.length === 0) {
+                        showError('Please upload a subtitle file.');
+                        return;
+                    }
+                    srtContent = await readFileAsText(myDropzone.files[0]);
+                } else {
+                    srtContent = document.getElementById('srt_text').value.trim();
+                    if (!srtContent) {
+                        showError('Please paste subtitle content.');
+                        return;
+                    }
+                }
+
+                const apiProvider = apiProviderSelect.value;
+                let apiKey = '';
+                let model = '';
+                let customApiUrl = '';
+                let customExtraHeaders = '';
+                if (apiProvider === 'openai') {
+                    apiKey = document.getElementById('openai_api_key').value;
+                    model = document.getElementById('openai_model').value;
+                } else if (apiProvider === 'gemini') {
+                    apiKey = document.getElementById('gemini_api_key').value;
+                    model = document.getElementById('gemini_model').value;
+                } else if (apiProvider === 'deepseek') {
+                    apiKey = document.getElementById('deepseek_api_key').value;
+                    model = document.getElementById('deepseek_model').value;
+                } else if (apiProvider === 'custom') {
+                    customApiUrl = document.getElementById('custom_api_url').value;
+                    apiKey = document.getElementById('custom_api_key').value;
+                    model = document.getElementById('custom_model').value;
+                    customExtraHeaders = document.getElementById('custom_extra_headers').value;
+                    if (!customApiUrl) {
+                        showError('Please enter your custom API endpoint.');
+                        return;
+                    }
+                    if (!model) {
+                        showError('Please enter your custom model name.');
+                        return;
+                    }
+                }
+                const targetLang = document.getElementById('lang-input').value;
+                const temperature = parseFloat(document.getElementById('temperature').value);
+                const chunkCount = parseInt(document.getElementById('chunk_count').value);
+                const prompt = document.getElementById('translation_prompt').value;
+
+                const chunks = splitSrtIntoChunks(srtContent, chunkCount);
+                const translatedChunks = new Array(chunks.length);
+                progressBar.style.width = '0%';
+                progressText.textContent = '0% Complete';
+                chunkStatus.textContent = `Processing chunk: 0/${chunks.length}`;
+                timeEstimate.textContent = '';
+
+                lastChunks = chunks;
+                lastTranslatedChunks = translatedChunks;
+                lastApiProvider = apiProvider;
+                lastPrompt = prompt;
+                lastTargetLang = targetLang;
+                lastTemperature = temperature;
+                lastModel = model;
+                lastApiKey = apiKey;
+
+                document.getElementById('manual-retry-section').style.display = 'none';
+
+                // Show live translation table for current chunk only
+                if (liveTableContainer) liveTableContainer.style.display = 'block';
+                if (liveTableBody) liveTableBody.innerHTML = '';
+
+                // Hide old live box
+                if (liveBox) liveBox.style.display = 'none';
+
+                // Sequential translation: show each chunk as it's being translated
+                for (let idx = 0; idx < chunks.length; idx++) {
+                    let translated = '';
+                    // Show only current chunk in table
+                    if (liveTableBody) {
+                        liveTableBody.innerHTML = '';
+                        renderLiveTranslationTable([chunks[idx]], [translatedChunks[idx]], () => {});
+                    }
+                    try {
+                        if (apiProvider === 'openai') {
+                            translated = await translateWithOpenAI(apiKey, model, prompt, targetLang, chunks[idx], temperature);
+                        } else if (apiProvider === 'deepseek') {
+                            translated = await translateWithDeepseek(apiKey, model, prompt, targetLang, chunks[idx], temperature);
+                        } else if (apiProvider === 'gemini') {
+                            translated = await translateWithGemini(apiKey, model, prompt, targetLang, chunks[idx], temperature);
+                        } else if (apiProvider === 'custom') {
+                            translated = await translateWithCustom(customApiUrl, apiKey, model, prompt, targetLang, chunks[idx], temperature, customExtraHeaders);
+                        } else {
+                            showError('Translation provider not supported.');
+                            translatedChunks[idx] = '[ERROR]: Translation provider not supported.';
+                            continue;
+                        }
+                        // Remove invisible/extra Unicode chars (like U+202A, U+202B, U+202C, U+200E, U+200F, U+202D, U+202E)
+                        // Also remove common LLM "continuation" or "translation continues" lines
+                        translatedChunks[idx] = (translated || '')
+                            .replace(/[\u202A\u202B\u202C\u202D\u202E\u200E\u200F]/g, '')
+                            .replace(/^\s*\(?ترجمه ادامه متن.*\)?\s*$/gmi, '') // Remove Persian "translation continues" lines
+                            .replace(/^\s*\(?translation continues.*\)?\s*$/gmi, '') // Remove English "translation continues" lines
+                            .replace(/^\s*\(?continued.*\)?\s*$/gmi, '') // Remove "continued" lines
+                            .replace(/^\s*\(?see next chunk.*\)?\s*$/gmi, '') // Remove "see next chunk" lines
+                            .replace(/^\s*\(?continue[d]?.*\)?\s*$/gmi, '') // Remove "continue" lines
+                            .replace(/^\s*\(?ادامه.*\)?\s*$/gmi, '') // Remove Persian "ادامه" lines
+                            .trim();
+                    } catch (err) {
+                        translatedChunks[idx] = `[ERROR]: ${err.message || err}`;
+                    }
+                    progressBar.style.width = Math.round(((idx + 1) / chunks.length) * 100) + '%';
+                    progressText.textContent = `${Math.round(((idx + 1) / chunks.length) * 100)}% Complete`;
+                    chunkStatus.textContent = `Processing chunk: ${idx + 1}/${chunks.length}`;
+                    // Show only current chunk in table
+                    if (liveTableBody) {
+                        liveTableBody.innerHTML = '';
+                        renderLiveTranslationTable([chunks[idx]], [translatedChunks[idx]], () => {});
+                    }
+                }
+
+                // After all chunks, show only failed ones in the table
+                const failedIdxs = [];
+                for (let i = 0; i < translatedChunks.length; i++) {
+                    if (!translatedChunks[i] || translatedChunks[i].startsWith('[ERROR]') || translatedChunks[i].trim() === '') {
+                        failedIdxs.push(i);
+                    }
+                }
+                if (liveTableBody) {
+                    liveTableBody.innerHTML = '';
+                    if (failedIdxs.length > 0) {
+                        const failedChunks = failedIdxs.map(i => chunks[i]);
+                        const failedTranslations = failedIdxs.map(i => translatedChunks[i]);
+                        renderLiveTranslationTable(failedChunks, failedTranslations, (relIdx) => retrySingleChunk(failedIdxs[relIdx]));
+                    }
+                }
+
+                // Merge and offer download
+                const merged = mergeChunks(translatedChunks);
+                const fixedSrt = fixSrtStructure(merged);
+                let outputSrt = fixedSrt;
+                if (/fa|farsi|persian/i.test(document.getElementById('lang-input').value)) {
+                    outputSrt = applyRtlToSrt(fixedSrt);
+                }
+                const blob = new Blob([outputSrt], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                downloadLink.innerHTML = `
+                    <a href="${url}" download="translated_subtitle.srt">
+                        <i class="fas fa-download"></i> Download Translated Subtitle
+                    </a>
+                `;
+                progressText.textContent = "Translation complete!";
+                chunkStatus.textContent = "";
+                timeEstimate.textContent = "";
+
+                showManualRetryIfNeeded();
+
+            } catch (err) {
+                showError('Translation failed: ' + (err.message || err));
+                if (liveTableContainer) liveTableContainer.style.display = 'none';
+            }
+        }
+
+        async function retrySingleChunk(idx) {
+            const apiProvider = apiProviderSelect.value;
+            let apiKey = '';
+            let model = '';
+            let customApiUrl = '';
+            let customExtraHeaders = '';
+            if (apiProvider === 'openai') {
+                apiKey = document.getElementById('openai_api_key').value;
+                model = document.getElementById('openai_model').value;
+            } else if (apiProvider === 'gemini') {
+                apiKey = document.getElementById('gemini_api_key').value;
+                model = document.getElementById('gemini_model').value;
+            } else if (apiProvider === 'deepseek') {
+                apiKey = document.getElementById('deepseek_api_key').value;
+                model = document.getElementById('deepseek_model').value;
+            } else if (apiProvider === 'custom') {
+                customApiUrl = document.getElementById('custom_api_url').value;
+                apiKey = document.getElementById('custom_api_key').value;
+                model = document.getElementById('custom_model').value;
+                customExtraHeaders = document.getElementById('custom_extra_headers').value;
+            }
+            const targetLang = document.getElementById('lang-input').value;
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const prompt = document.getElementById('translation_prompt').value;
+
+            progressContainer.style.display = 'block';
+            progressText.textContent = `Retranslating chunk #${idx+1}...`;
+
+            try {
+                let translated = '';
+                if (apiProvider === 'openai') {
+                    translated = await translateWithOpenAI(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
+                } else if (apiProvider === 'deepseek') {
+                    translated = await translateWithDeepseek(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
+                } else if (apiProvider === 'gemini') {
+                    translated = await translateWithGemini(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
+                } else if (apiProvider === 'custom') {
+                    translated = await translateWithCustom(customApiUrl, apiKey, model, prompt, targetLang, lastChunks[idx], temperature, customExtraHeaders);
+                } else {
+                    lastTranslatedChunks[idx] = '[ERROR]: Translation provider not supported.';
+                }
+                if (translated && !translated.startsWith('[ERROR]')) {
+                    lastTranslatedChunks[idx] = translated.trim();
+                }
+            } catch (err) {
+                lastTranslatedChunks[idx] = `[ERROR]: ${err.message || err}`;
+            }
+            renderLiveTranslationTable(lastChunks, lastTranslatedChunks, retrySingleChunk);
+
+            const merged = mergeChunks(lastTranslatedChunks);
+            const fixedSrt = fixSrtStructure(merged);
+            let outputSrt = fixedSrt;
+            if (/fa|farsi|persian/i.test(document.getElementById('lang-input').value)) {
+                outputSrt = applyRtlToSrt(fixedSrt);
+            }
+            const blob = new Blob([outputSrt], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            downloadLink.innerHTML = `
+                <a href="${url}" download="translated_subtitle.srt">
+                    <i class="fas fa-download"></i> Download Translated Subtitle
+                </a>
+            `;
+            progressText.textContent = "Retranslation complete!";
+            setTimeout(() => { progressContainer.style.display = 'none'; }, 1000);
+        }
+
+        translateForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            progressBar.style.width = '0%';
+            progressText.textContent = '0% Complete';
+            chunkStatus.textContent = 'Processing chunk: 0/0';
+            timeEstimate.textContent = 'Estimated time: calculating...';
+            downloadLink.innerHTML = '';
+            errorMessage.style.display = 'none';
+            progressContainer.style.display = 'block';
+
+            const apiProvider = apiProviderSelect.value;
+            let apiKey;
+            switch(apiProvider) {
+                case 'gemini':
+                    apiKey = document.getElementById('gemini_api_key').value;
+                    break;
+                case 'openai':
+                    apiKey = document.getElementById('openai_api_key').value;
+                    break;
+                case 'deepseek':
+                    apiKey = document.getElementById('deepseek_api_key').value;
+                    break;
+                case 'custom':
+                    apiKey = document.getElementById('custom_api_key').value;
+                    break;
+            }
+            if (!apiKey) {
+                showError(`Please enter your ${apiProvider} API key.`);
+                return;
+            }
+
+            realTranslation();
+        });
+
+        let lastChunks = [];
+        let lastTranslatedChunks = [];
+        let lastApiProvider = '';
+        let lastPrompt = '';
+        let lastTargetLang = '';
+        let lastTemperature = 0.7;
+        let lastModel = '';
+        let lastApiKey = '';
+
+        function showManualRetryIfNeeded() {
+            const failed = [];
+            for (let i = 0; i < lastTranslatedChunks.length; i++) {
+                if (!lastTranslatedChunks[i] || lastTranslatedChunks[i].startsWith('[ERROR]') || lastTranslatedChunks[i].trim() === '') {
+                    failed.push(i);
+                }
+            }
+            if (failed.length === 0) {
+                document.getElementById('manual-retry-section').style.display = 'none';
+                return;
+            }
+            const retryList = document.getElementById('retry-chunks-list');
+            retryList.innerHTML = '';
+            failed.forEach(idx => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '8px';
+                div.innerHTML = `
+                    <label>
+                        <input type="checkbox" class="retry-chunk-checkbox" value="${idx}" checked>
+                        <b>Chunk #${idx+1}</b>
+                    </label>
+                    <pre style="white-space:pre-wrap;background:#f8f8f8;padding:6px;border-radius:4px;font-size:0.95em;max-height:120px;overflow:auto;">${escapeHtml(lastChunks[idx])}</pre>
+                    <div style="color:#c00;font-size:0.9em;">${escapeHtml(lastTranslatedChunks[idx] || '')}</div>
+                `;
+                retryList.appendChild(div);
+            });
+            document.getElementById('manual-retry-section').style.display = '';
+        }
+
+        document.getElementById('retry-failed-chunks-btn').onclick = async function() {
+            const checkboxes = document.querySelectorAll('.retry-chunk-checkbox');
+            const selected = [];
+            checkboxes.forEach(cb => { if (cb.checked) selected.push(Number(cb.value)); });
+            if (selected.length === 0) return;
+
+            const apiProvider = apiProviderSelect.value;
+            let apiKey = '';
+            let model = '';
+            let customApiUrl = '';
+            let customExtraHeaders = '';
+            if (apiProvider === 'openai') {
+                apiKey = document.getElementById('openai_api_key').value;
+                model = document.getElementById('openai_model').value;
+            } else if (apiProvider === 'gemini') {
+                apiKey = document.getElementById('gemini_api_key').value;
+                model = document.getElementById('gemini_model').value;
+            } else if (apiProvider === 'deepseek') {
+                apiKey = document.getElementById('deepseek_api_key').value;
+                model = document.getElementById('deepseek_model').value;
+            } else if (apiProvider === 'custom') {
+                customApiUrl = document.getElementById('custom_api_url').value;
+                apiKey = document.getElementById('custom_api_key').value;
+                model = document.getElementById('custom_model').value;
+                customExtraHeaders = document.getElementById('custom_extra_headers').value;
+            }
+            const targetLang = document.getElementById('lang-input').value;
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const prompt = document.getElementById('translation_prompt').value;
+
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressText.textContent = 'Retrying failed chunks...';
+            chunkStatus.textContent = '';
+            errorMessage.style.display = 'none';
+
+            for (let i = 0; i < selected.length; i++) {
+                const idx = selected[i];
+                try {
+                    let translated = '';
+                    liveBox.style.display = 'block';
+                    liveInput.textContent = lastChunks[idx];
+                    liveOutput.textContent = '...translating...';
+
+                    if (apiProvider === 'openai') {
+                        translated = await translateWithOpenAI(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
+                    } else if (apiProvider === 'deepseek') {
+                        translated = await translateWithDeepseek(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
+                    } else if (apiProvider === 'gemini') {
+                        translated = await translateWithGemini(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
+                    } else if (apiProvider === 'custom') {
+                        translated = await translateWithCustom(customApiUrl, apiKey, model, prompt, targetLang, lastChunks[idx], temperature, customExtraHeaders);
+                    } else {
+                        lastTranslatedChunks[idx] = '[ERROR]: Translation provider not supported.';
+                        liveOutput.textContent = lastTranslatedChunks[idx];
+                        continue;
+                    }
+                    if (translated && !translated.startsWith('[ERROR]')) {
+                        lastTranslatedChunks[idx] = translated.trim();
+                        liveOutput.textContent = lastTranslatedChunks[idx];
+                    }
+                } catch (err) {
+                    lastTranslatedChunks[idx] = `[ERROR]: ${err.message || err}`;
+                    liveOutput.textContent = lastTranslatedChunks[idx];
+                }
+                progressBar.style.width = Math.round(((i+1)/selected.length)*100) + '%';
+            }
+
+            liveInput.textContent = '';
+            liveOutput.textContent = '';
+            liveBox.style.display = 'none';
+
+            showManualRetryIfNeeded();
+
+            const merged = mergeChunks(lastTranslatedChunks);
+            const fixedSrt = fixSrtStructure(merged);
+            let outputSrt = fixedSrt;
+            if (/fa|farsi|persian/i.test(document.getElementById('lang-input').value)) {
+                outputSrt = applyRtlToSrt(fixedSrt);
+            }
+            const blob = new Blob([outputSrt], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            downloadLink.innerHTML = `
+                <a href="${url}" download="translated_subtitle.srt">
+                    <i class="fas fa-download"></i> Download Translated Subtitle
+                </a>
+            `;
+            progressText.textContent = "Retry complete!";
+            setTimeout(() => { progressContainer.style.display = 'none'; }, 1000);
+        };
+
+        themeToggle.addEventListener('click', toggleTheme);
+
+        (function() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        })();
+
+        clearMemoryButton.addEventListener('click', function() {
+            [
+                'gemini_api_key', 'openai_api_key', 'deepseek_api_key', 'custom_api_key',
+                'remember_gemini_key', 'remember_openai_key', 'remember_deepseek_key', 'remember_custom_key'
+            ].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.type === 'checkbox') el.checked = false;
+                    else el.value = '';
+                }
+                localStorage.removeItem(id);
+            });
+            alert('Translation memory and API keys cleared.');
+        });
+
+        // Deepseek translation function (API compatible with OpenAI)
+        async function translateWithDeepseek(apiKey, model, prompt, targetLang, chunk, temperature) {
+            const systemPrompt = prompt + `\nTarget language: ${targetLang}`;
+            const userPrompt = `Translate the following subtitle lines to ${targetLang}:\n${chunk}`;
+            const body = {
+                model: model,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userPrompt }
+                ],
+                temperature: temperature,
+                max_tokens: 2048
+            };
+            
+            let endpoints = [
+                "https://api.deepseek.com/v1/chat/completions",
+                "https://api.deepseek.com/openai/v1/chat/completions"
+            ];
+            let lastError = "";
+            
+            for (let endpoint of endpoints) {
+                try {
+                    const resp = await fetch(endpoint, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + apiKey
+                        },
+                        body: JSON.stringify(body)
+                    });
+
+                    if (!resp.ok) {
+                        // بررسی خطاهای HTTP
+                        if (resp.status === 429) {
+                            throw new Error("Rate limit exceeded. Please wait a moment and try again.");
+                        }
+                        if (resp.status === 401 || resp.status === 403) {
+                            throw new Error("Invalid API key or authorization failed.");
+                        }
+                        if (resp.status === 404) {
+                            throw new Error("API endpoint not found. Please check your configuration.");
+                        }
+                        
+                        // تلاش برای دریافت پیام خطای API
+                        let errText = await resp.text();
+                        try {
+                            const errObj = JSON.parse(errText);
+                            lastError = errObj.error?.message || errText;
+                        } catch {
+                            lastError = errText || `HTTP Error ${resp.status}`;
+                        }
+                        continue;
+                    }
+
+                    const data = await resp.json();
+                    let content = "";
+                    
+                    if (data.choices?.[0]) {
+                        content = data.choices[0].message?.content || data.choices[0].delta?.content || "";
+                    }
+
+                    if (typeof content === "string" && content.trim()) {
+                        return content.trim();
+                    }
+
+                    lastError = "Empty or invalid response from API";
+
+                } catch (err) {
+                    // مدیریت خطاهای شبکه
+                    if (err instanceof TypeError && err.message.includes('fetch')) {
+                        lastError = "Network error. Please check your internet connection.";
+                    } else {
+                        lastError = err.message || String(err);
+                    }
+                }
+            }
+
+            throw new Error(`API Error: ${lastError}`);
+        }
+
+        // On YouTube URL input change, auto-fetch and fill SRT textarea
+        const youtubeUrlInput = document.getElementById('youtube_url');
+        const srtTextArea = document.getElementById('srt_text');
+
+        youtubeUrlInput.addEventListener('change', async function() {
+            const url = youtubeUrlInput.value.trim();
+            if (!url) return;
+            srtTextArea.value = '';
+            srtTextArea.placeholder = 'در حال دریافت زیرنویس...';
+            youtubeUrlInput.disabled = true;
+            try {
+                let srt = '';
+                let found = false;
+                const videoIdMatch = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})(?:[&?]|$)/);
+                if (!videoIdMatch) throw new Error("Invalid YouTube URL.");
+                const videoId = videoIdMatch[1];
+
+                // Try youtubetranscript.com (JSON)
+                try {
+                    const resp = await fetch(`https://youtubetranscript.com/?server=1&lang=en&video=${videoId}`);
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (Array.isArray(data) && data.length > 0 && data[0].text) {
+                            for (let i = 0; i < data.length; i++) {
+                                const entry = data[i];
+                                const start = entry.start;
+                                const dur = entry.dur || 2;
+                                const end = start + dur;
+                                function secToSrtTime(sec) {
+                                    const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+                                    const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+                                    const s = String(Math.floor(sec % 60)).padStart(2, "0");
+                                    const ms = String(Math.floor((sec - Math.floor(sec)) * 1000)).padStart(3, "0");
+                                    return `${h}:${m}:${s},${ms}`;
+                                }
+                                srt += `${i + 1}\n${secToSrtTime(start)} --> ${secToSrtTime(end)}\n${entry.text}\n\n`;
+                            }
+                            found = true;
+                        }
+                    }
+                } catch (e) { /* ignore */ }
+
+                // Try youtube.com API (timedtext, for auto captions)
+                if (!found) {
+                    try {
+                        // Try to get auto-generated captions (en)
+                        const timedtextUrl = `https://video.google.com/timedtext?lang=en&v=${videoId}&fmt=srv3`;
+                        const resp = await fetch(timedtextUrl);
+                        if (resp.ok) {
+                            const xml = await resp.text();
+                            if (xml.includes('<text')) {
+                                // Convert XML to SRT
+                                let parser = new DOMParser();
+                                let xmlDoc = parser.parseFromString(xml, "text/xml");
+                                let texts = xmlDoc.getElementsByTagName("text");
+                                let srtLines = [];
+                                for (let i = 0; i < texts.length; i++) {
+                                    const t = texts[i];
+                                    let start = parseFloat(t.getAttribute("start"));
+                                    let dur = parseFloat(t.getAttribute("dur") || "2");
+                                    let end = start + dur;
+                                    let text = (t.textContent || "").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+                                    function secToSrtTime(sec) {
+                                        const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+                                        const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+                                        const s = String(Math.floor(sec % 60)).padStart(2, "0");
+                                        const ms = String(Math.floor((sec - Math.floor(sec)) * 1000)).padStart(3, "0");
+                                        return `${h}:${m}:${s},${ms}`;
+                                    }
+                                    srtLines.push(`${i+1}\n${secToSrtTime(start)} --> ${secToSrtTime(end)}\n${text}\n`);
+                                }
+                                if (srtLines.length > 0) {
+                                    srt = srtLines.join('\n');
+                                    found = true;
+                                }
+                            }
+                        }
+                    } catch (e) { /* ignore */ }
+                }
+
+                if (!found || !srt || !/\d{2}:\d{2}:\d{2},\d{3}/.test(srt)) {
+                    throw new Error('به زودی این قابلیت قابل دسترس خواهد شد.');
+                }
+                srtTextArea.value = srt;
+                srtTextArea.placeholder = 'Paste your SRT content here...';
+                document.querySelector('input[name="input_method"][value="text"]').checked = true;
+                document.getElementById('file-input').style.display = 'none';
+                document.getElementById('text-input').style.display = 'block';
+                srtTextArea.focus();
+            } catch (err) {
+                srtTextArea.value = '';
+                srtTextArea.placeholder = 'Paste your SRT content here...';
+                alert('به زودی این قابلیت قابل دسترس خواهد شد.');
+                youtubeUrlInput.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
