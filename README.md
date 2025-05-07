@@ -1,2 +1,82 @@
-# Subtitle-translator
-Custom Subtitle Translator – Local HTML App A lightweight local HTML tool that fetches subtitle files via API and translates them using customizable settings. It offers full control over translation behavior, making it ideal for movie lovers, language learners, and developers working with subtitle files.
+# 🎬 Custom Subtitle Translator (HTML Local App)
+
+> A lightweight, privacy-focused HTML app for translating subtitle files using customizable AI models and API keys — all locally in your browser.
+
+![image](https://github.com/user-attachments/assets/31a25e82-30fb-4e91-964b-b5995ec428b9)
+
+### ✨ Features
+
+- ⚡ Runs 100% locally – No server or installation required
+- 🔑 API key input with password visibility toggle
+- 🎯 Flexible translation settings
+- 🌙 Light/Dark mode support
+- 🧾 Drag & drop `.srt` subtitle files
+- 🌐 Choose source and target languages
+- 🤖 Supports multiple AI translation models
+
+---
+
+## 🤖 Supported Translation Models
+
+You can connect this tool to a variety of AI language models by providing your own API key or proxy URL:
+
+- **OpenAI GPT (e.g., GPT-3.5, GPT-4)**
+- **Google Gemini**
+- **DeepSeek**
+- **Any self-hosted/custom LLM** (via a compatible API)
+- **LLM proxies (e.g., OpenRouter, LM Studio, LocalAI, etc.)**
+
+> You are fully in control of your data. All processing happens in your browser.
+
+---
+
+## 📥 How to Use
+
+1. Open the HTML file in your browser.
+2. Drop or upload an `.srt` subtitle file.
+3. Enter your API key or local model URL.
+4. Choose the source and target languages.
+5. Adjust translation settings if needed.
+6. Click **Translate**, then download the translated subtitle.
+
+---
+
+## 🌍 فارسی – مترجم زیرنویس شخصی (بر پایه HTML به‌صورت لوکال)
+
+> ابزاری سبک و امن برای ترجمه فایل زیرنویس با استفاده از مدل‌های زبانی مختلف. کاملاً در مرورگر شما اجرا می‌شود و نیازی به نصب یا سرور ندارد.
+
+![image](https://github.com/user-attachments/assets/6967325b-5beb-4403-a099-d1e9ce49b5d4)
+
+### ✨ امکانات
+
+- 🚀 اجرا به‌صورت کامل در مرورگر (بدون نصب یا سرور)
+- 🔐 ورود کلید API با امکان مخفی‌سازی
+- 🎛 تنظیمات قابل شخصی‌سازی ترجمه
+- 🌗 حالت تیره و روشن
+- 🧾 پشتیبانی از کشیدن و رها کردن فایل‌های زیرنویس `.srt`
+- 🌐 انتخاب زبان مبدا و مقصد
+- 🤖 پشتیبانی از مدل‌های زبانی مختلف
+
+---
+
+## 🤖 مدل‌های پشتیبانی‌شده
+
+شما می‌توانید با وارد کردن کلید API یا آدرس مدل محلی خود، از مدل‌های مختلفی برای ترجمه استفاده کنید:
+
+- **OpenAI GPT (مانند GPT-3.5 و GPT-4)**
+- **Google Gemini**
+- **DeepSeek**
+- **هر مدل شخصی یا لوکال (self-hosted)** که از API استاندارد پشتیبانی کند
+- **پروکسی‌های LLM (مثل OpenRouter، LM Studio، LocalAI و...)**
+
+> تمام پردازش‌ها در مرورگر شما انجام می‌شود و حریم خصوصی شما کاملاً حفظ می‌شود.
+
+---
+
+## 📁 اطلاعات فایل
+
+- **نام فایل:** `subtitle-translator.html`
+- **پیش‌نیازها:** فقط یک مرورگر مدرن و اینترنت (برای اتصال به API)
+- **مجوز استفاده:** MIT (یا هر لایسنس دلخواه شما)
+
+---
