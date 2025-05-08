@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-API Subtitle Translator</title>
+    <title id="app-title">Multi-API Subtitle Translator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -40,7 +40,7 @@
             width: 100%;
             max-width: 820px;
             margin: 0 auto;
-            padding: 24px 0;
+            padding: 24px 0; /* Reduced top/bottom padding for more content visibility */
             flex: 1;
         }
         .top-bar {
@@ -59,25 +59,27 @@
             display: flex;
             gap: 8px;
         }
-        .control-btn {
+        .control-btn, #language-toggle { /* Added #language-toggle */
             background: transparent;
-            border: none;
+            border: 1px solid var(--input-border); /* Added border for visibility */
             color: var(--text-color);
             cursor: pointer;
-            font-size: 1.1rem;
-            padding: 5px;
-            border-radius: 50%;
-            width: 30px;
+            font-size: 0.9rem; /* Slightly smaller for language toggle */
+            padding: 5px 8px; /* Adjusted padding */
+            border-radius: 4px; /* Rounded corners */
             height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background 0.2s;
         }
-        .control-btn:hover {
+        .control-btn:hover, #language-toggle:hover {
             background-color: #ededed;
         }
-        .dark-mode .control-btn:hover {
+        .dark-mode .control-btn, .dark-mode #language-toggle {
+             border: 1px solid var(--input-border);
+        }
+        .dark-mode .control-btn:hover, .dark-mode #language-toggle:hover {
             background-color: #232323;
         }
         .instructions {
@@ -402,10 +404,12 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header with controls -->
         <div class="top-bar">
-             <h1 id="page-title">Subtitle Translator</h1>
+             <h1 id="page-title" data-en="Subtitle Translator" data-fa="مترجم زیرنویس">Subtitle Translator</h1>
              <div class="controls">
+                 <button id="language-toggle" class="control-btn" aria-label="Toggle language" title="Toggle UI language (English/فارسی)">
+                     <span id="language-toggle-text">فارسی</span>
+                 </button>
                  <button id="clear-memory-button" class="control-btn" aria-label="Clear translation memory" title="Clear translation memory">
                      <i class="fa fa-trash"></i>
                  </button>
@@ -416,46 +420,41 @@
         </div>
 
         <form id="translate-form">
-            <!-- Input Method Selection -->
             <div class="form-group">
-                <label class="form-label">Input Method:</label>
+                <label class="form-label" data-en="Input Method:" data-fa="روش ورودی:">Input Method:</label>
                 <div class="radio-group">
                     <label class="radio-label">
-                        <input type="radio" name="input_method" value="file" checked> Upload File
+                        <input type="radio" name="input_method" value="file" checked> <span data-en="Upload File" data-fa="بارگذاری فایل">Upload File</span>
                     </label>
                     <label class="radio-label">
-                        <input type="radio" name="input_method" value="text"> Paste Text
+                        <input type="radio" name="input_method" value="text"> <span data-en="Paste Text" data-fa="چسباندن متن">Paste Text</span>
                     </label>
                 </div>
             </div>
 
-            <!-- File Input Area -->
             <div id="file-input" class="form-group input-section">
-                <label class="form-label">Upload Subtitle File (SRT, VTT, SSA, ASS):</label>
+                <label class="form-label" data-en="Upload Subtitle File (SRT, VTT, SSA, ASS):" data-fa="بارگذاری فایل زیرنویس (SRT, VTT, SSA, ASS):">Upload Subtitle File (SRT, VTT, SSA, ASS):</label>
                 <div id="dropzone-upload" class="dropzone">
                     <div class="dz-message">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Drag & drop subtitle file here<br>or click to browse</p>
+                        <p data-en="Drag & drop subtitle file here<br>or click to browse" data-fa="فایل زیرنویس را اینجا بکشید و رها کنید<br>یا برای انتخاب کلیک کنید">Drag & drop subtitle file here<br>or click to browse</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Text Input Area -->
             <div id="text-input" class="form-group input-section" style="display: none;">
-                <label class="form-label" for="srt_text">Paste SRT Content:</label>
+                <label class="form-label" for="srt_text" data-en="Paste SRT Content:" data-fa="محتوای SRT را بچسبانید:">Paste SRT Content:</label>
                 <textarea id="srt_text" name="srt_text" rows="6" placeholder="Paste your SRT content here..."></textarea>
             </div>
 
-            <!-- New: YouTube URL Input -->
             <div class="form-group">
-                <label class="form-label" for="youtube_url">YouTube Video URL (auto-fetch subtitles):</label>
+                <label class="form-label" for="youtube_url" data-en="YouTube Video URL (auto-fetch subtitles):" data-fa="آدرس ویدیوی یوتیوب (دریافت خودکار زیرنویس):">YouTube Video URL (auto-fetch subtitles):</label>
                 <input type="text" id="youtube_url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
-                <p class="note">Paste a YouTube link to auto-download English subtitles for translation.</p>
+                <p class="note" data-en="Paste a YouTube link to auto-download English subtitles for translation." data-fa="لینک یوتیوب را برای دانلود خودکار زیرنویس انگلیسی جهت ترجمه، وارد کنید.">Paste a YouTube link to auto-download English subtitles for translation.</p>
             </div>
 
-            <!-- API Selection -->
             <div class="form-group">
-                <label class="form-label">Select API Provider:</label>
+                <label class="form-label" data-en="Select API Provider:" data-fa="انتخاب ارائه‌دهنده API:">Select API Provider:</label>
                 <select id="api_provider" name="api_provider">
                     <option value="gemini">Google Gemini</option>
                     <option value="openai">Open AI</option>
@@ -464,60 +463,51 @@
                 </select>
             </div>
 
-            <!-- API Key Sections (Conditional Display) -->
             <div id="api-keys-section">
-                <!-- Gemini API -->
                 <div class="api-model-group" id="gemini-api-section">
                     <div class="form-group">
-                        <label class="form-label" for="gemini_api_key">Gemini API Key:</label>
+                        <label class="form-label" for="gemini_api_key" data-en="Gemini API Key:" data-fa="کلید Gemini API:">Gemini API Key:</label>
                         <div class="api-key-container">
                             <input type="password" id="gemini_api_key" name="gemini_api_key" placeholder="Enter your Gemini API key">
-                            <button type="button" class="toggle-password" data-for="gemini_api_key">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                            <button type="button" class="toggle-password" data-for="gemini_api_key"><i class="fas fa-eye"></i></button>
                         </div>
                         <div class="checkbox-group">
                             <input type="checkbox" id="remember_gemini_key" name="remember_gemini_key">
-                            <label for="remember_gemini_key">Remember key</label>
+                            <label for="remember_gemini_key" data-en="Remember key" data-fa="ذخیره کلید">Remember key</label>
                         </div>
-                        <p class="note">Get your API key from <a href='https://aistudio.google.com/app/apikey' target='_blank'>Google AI Studio</a>.</p>
+                        <p class="note" data-en="Get your API key from <a href='https://aistudio.google.com/app/apikey' target='_blank'>Google AI Studio</a>." data-fa="کلید API خود را از <a href='https://aistudio.google.com/app/apikey' target='_blank'>Google AI Studio</a> دریافت کنید.">Get your API key from <a href='https://aistudio.google.com/app/apikey' target='_blank'>Google AI Studio</a>.</p>
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label" for="gemini_model">Gemini Model:</label>
+                        <label class="form-label" for="gemini_model" data-en="Gemini Model:" data-fa="مدل Gemini:">Gemini Model:</label>
                         <select id="gemini_model" name="gemini_model">
-                            <option value="gemini-2.0-flash" selected>Gemini 2.0 Flash</option>
-                            <option value="gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash</option>
+                            <option value="gemini-1.5-pro-latest" selected>Gemini 1.5 Pro (Latest)</option>
+                            <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
+                            <option value="gemini-2.5-pro-preview-05-06">Gemini 2.5 Pro Preview (05-06)</option>
+                            <option value="gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash Preview (04-17)</option>
+                            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
                             <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
-                            <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro Experimental</option>
-                            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                            <option value="gemini-1.0-pro">Gemini 1.0 Pro (Older)</option>
                         </select>
-                        <p class="note" style="color:#c00;">
-                            If you get quota errors, select "Gemini 2.5 Pro Experimental" or "Gemini 2.0 Flash".
+                        <p class="note" style="color:#c00;" data-en='If you get quota errors, try an older or "flash" model.' data-fa="در صورت بروز خطای سهمیه، مدل قدیمی‌تر یا 'flash' را امتحان کنید.">
+                            If you get quota errors, try an older or "flash" model.
                         </p>
                     </div>
                 </div>
-
-                <!-- OpenAI API -->
                 <div class="api-model-group" id="openai-api-section" style="display: none;">
                     <div class="form-group">
-                        <label class="form-label" for="openai_api_key">OpenAI API Key:</label>
+                        <label class="form-label" for="openai_api_key" data-en="OpenAI API Key:" data-fa="کلید OpenAI API:">OpenAI API Key:</label>
                         <div class="api-key-container">
                             <input type="password" id="openai_api_key" name="openai_api_key" placeholder="Enter your OpenAI API key">
-                            <button type="button" class="toggle-password" data-for="openai_api_key">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                            <button type="button" class="toggle-password" data-for="openai_api_key"><i class="fas fa-eye"></i></button>
                         </div>
                         <div class="checkbox-group">
                             <input type="checkbox" id="remember_openai_key" name="remember_openai_key">
-                            <label for="remember_openai_key">Remember key</label>
+                            <label for="remember_openai_key" data-en="Remember key" data-fa="ذخیره کلید">Remember key</label>
                         </div>
-                        <p class="note">Get your API key from <a href='https://platform.openai.com/api-keys' target='_blank'>OpenAI Platform</a>.</p>
+                        <p class="note" data-en="Get your API key from <a href='https://platform.openai.com/api-keys' target='_blank'>OpenAI Platform</a>." data-fa="کلید API خود را از <a href='https://platform.openai.com/api-keys' target='_blank'>OpenAI Platform</a> دریافت کنید.">Get your API key from <a href='https://platform.openai.com/api-keys' target='_blank'>OpenAI Platform</a>.</p>
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label" for="openai_model">OpenAI Model:</label>
+                        <label class="form-label" for="openai_model" data-en="OpenAI Model:" data-fa="مدل OpenAI:">OpenAI Model:</label>
                         <select id="openai_model" name="openai_model">
                             <option value="gpt-4o" selected>GPT-4o</option>
                             <option value="gpt-4o-mini">GPT-4o Mini</option>
@@ -526,105 +516,84 @@
                         </select>
                     </div>
                 </div>
-
-                <!-- Deepseek API -->
                 <div class="api-model-group" id="deepseek-api-section" style="display: none;">
-                    <div class="form-group">
-                        <label class="form-label" for="deepseek_api_key">Deepseek API Key:</label>
+                     <div class="form-group">
+                        <label class="form-label" for="deepseek_api_key" data-en="Deepseek API Key:" data-fa="کلید Deepseek API:">Deepseek API Key:</label>
                         <div class="api-key-container">
                             <input type="password" id="deepseek_api_key" name="deepseek_api_key" placeholder="Enter your Deepseek API key">
-                            <button type="button" class="toggle-password" data-for="deepseek_api_key">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                            <button type="button" class="toggle-password" data-for="deepseek_api_key"><i class="fas fa-eye"></i></button>
                         </div>
                         <div class="checkbox-group">
                             <input type="checkbox" id="remember_deepseek_key" name="remember_deepseek_key">
-                            <label for="remember_deepseek_key">Remember key</label>
+                            <label for="remember_deepseek_key" data-en="Remember key" data-fa="ذخیره کلید">Remember key</label>
                         </div>
-                        <p class="note">Get your API key from <a href='https://platform.deepseek.com' target='_blank'>Deepseek Platform</a>.</p>
+                        <p class="note" data-en="Get your API key from <a href='https://platform.deepseek.com' target='_blank'>Deepseek Platform</a>." data-fa="کلید API خود را از <a href='https://platform.deepseek.com' target='_blank'>Deepseek Platform</a> دریافت کنید.">Get your API key from <a href='https://platform.deepseek.com' target='_blank'>Deepseek Platform</a>.</p>
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label" for="deepseek_model">Deepseek Model:</label>
+                        <label class="form-label" for="deepseek_model" data-en="Deepseek Model:" data-fa="مدل Deepseek:">Deepseek Model:</label>
                         <select id="deepseek_model" name="deepseek_model">
                             <option value="deepseek-chat" selected>Deepseek Chat</option>
-                            <option value="deepseek-reasoner">Deepseek Reason</option>
+                            <option value="deepseek-coder">Deepseek Coder</option>
                         </select>
                     </div>
                 </div>
-
-                <!-- Custom API -->
                 <div class="api-model-group" id="custom-api-section" style="display: none;">
                     <div class="form-group">
-                        <label class="form-label" for="custom_api_url">Custom API Endpoint:</label>
+                        <label class="form-label" for="custom_api_url" data-en="Custom API Endpoint:" data-fa="نقطه پایانی API سفارشی:">Custom API Endpoint:</label>
                         <input type="text" id="custom_api_url" name="custom_api_url" placeholder="https://your.api/endpoint">
-                        <p class="note">Endpoint must be OpenAI-compatible (chat/completions) or similar.</p>
+                        <p class="note" data-en="Endpoint must be OpenAI-compatible (chat/completions) or similar." data-fa="نقطه پایانی باید با OpenAI (chat/completions) یا مشابه سازگار باشد.">Endpoint must be OpenAI-compatible (chat/completions) or similar.</p>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="custom_api_key">Custom API Key:</label>
+                        <label class="form-label" for="custom_api_key" data-en="Custom API Key:" data-fa="کلید API سفارشی:">Custom API Key:</label>
                         <div class="api-key-container">
                             <input type="password" id="custom_api_key" name="custom_api_key" placeholder="Enter your custom API key">
-                            <button type="button" class="toggle-password" data-for="custom_api_key">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                            <button type="button" class="toggle-password" data-for="custom_api_key"><i class="fas fa-eye"></i></button>
                         </div>
                         <div class="checkbox-group">
                             <input type="checkbox" id="remember_custom_key" name="remember_custom_key">
-                            <label for="remember_custom_key">Remember key</label>
+                            <label for="remember_custom_key" data-en="Remember key" data-fa="ذخیره کلید">Remember key</label>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="custom_model">Custom Model Name:</label>
+                        <label class="form-label" for="custom_model" data-en="Custom Model Name:" data-fa="نام مدل سفارشی:">Custom Model Name:</label>
                         <input type="text" id="custom_model" name="custom_model" placeholder="e.g., llama-3, your-model-name">
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="custom_extra_headers">Extra Headers (JSON):</label>
+                        <label class="form-label" for="custom_extra_headers" data-en="Extra Headers (JSON):" data-fa="هدرهای اضافی (JSON):">Extra Headers (JSON):</label>
                         <textarea id="custom_extra_headers" name="custom_extra_headers" rows="2" placeholder='{"Custom-Header":"value"}'></textarea>
-                        <p class="note">Optional: Add extra headers as JSON.</p>
+                        <p class="note" data-en="Optional: Add extra headers as JSON." data-fa="اختیاری: هدرهای اضافی را به صورت JSON اضافه کنید.">Optional: Add extra headers as JSON.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Target Language -->
             <div class="form-group">
-                <label class="form-label" for="lang-input">Target Language:</label>
+                <label class="form-label" for="lang-input" data-en="Target Language:" data-fa="زبان مقصد:">Target Language:</label>
                 <input type="text" id="lang-input" name="lang" value="Persian (Farsi)" placeholder="e.g., Spanish, French, Japanese" required>
             </div>
 
-            <!-- Advanced Settings -->
             <details class="settings">
-                <summary><span id="advanced-settings-summary-text">Advanced Settings</span> <i class="summary-icon fas fa-chevron-down"></i></summary>
+                <summary><span id="advanced-settings-summary-text" data-en="Advanced Settings" data-fa="تنظیمات پیشرفته">Advanced Settings</span> <i class="summary-icon fas fa-chevron-down"></i></summary>
                 <div class="settings-content">
-                    <p class="warning">
+                    <p class="warning" data-en="⚠️ Adjusting these settings can affect performance, cost, and translation quality." data-fa="⚠️ تنظیم این موارد می‌تواند بر عملکرد، هزینه و کیفیت ترجمه تأثیر بگذارد.">
                         ⚠️ Adjusting these settings can affect performance, cost, and translation quality.
                     </p>
-
                     <div class="form-group">
-                        <label class="form-label" for="temperature">Temperature:</label>
+                        <label class="form-label" for="temperature" data-en="Temperature:" data-fa="دما (Temperature):">Temperature:</label>
                         <input type="number" id="temperature" name="temperature" min="0" max="2" step="0.1" value="0.7" placeholder="e.g., 0.7">
-                        <p class="note">Controls randomness (0.0-2.0). Higher values = more creative/random.</p>
+                        <p class="note" data-en="Controls randomness (0.0-2.0). Higher values = more creative/random." data-fa="کنترل خلاقیت (۰.۰-۲.۰). مقادیر بالاتر = خلاقیت/تصادفی بودن بیشتر.">Controls randomness (0.0-2.0). Higher values = more creative/random.</p>
                     </div>
-
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="useProxyCheckbox" name="useProxyCheckbox">
-                        <label for="useProxyCheckbox">Use Proxy</label>
-                        <p class="note">Enable if direct API access is blocked (e.g., sanctioned regions).</p>
-                    </div>
-
                     <div class="form-group">
-                        <label class="form-label" for="base_delay">Base Delay (ms):</label>
+                        <label class="form-label" for="base_delay" data-en="Base Delay (ms):" data-fa="تأخیر پایه (میلی‌ثانیه):">Base Delay (ms):</label>
                         <input type="number" id="base_delay" name="base_delay" min="100" value="1000" placeholder="1000" required>
-                        <p class="note">Delay between successful chunk requests.</p>
+                        <p class="note" data-en="Delay between successful chunk requests." data-fa="تأخیر بین درخواست‌های موفق هر بخش.">Delay between successful chunk requests.</p>
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label" for="chunk_count">Number of Chunks:</label>
+                        <label class="form-label" for="chunk_count" data-en="Number of Chunks:" data-fa="تعداد بخش‌ها:">Number of Chunks:</label>
                         <input type="number" id="chunk_count" name="chunk_count" min="1" max="100" value="20" placeholder="20" required>
-                        <p class="note">Split subtitles into this many parts (1-100).</p>
+                        <p class="note" data-en="Split subtitles into this many parts (1-100)." data-fa="زیرنویس را به این تعداد بخش تقسیم کن (۱-۱۰۰).">Split subtitles into this many parts (1-100).</p>
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label" for="translation_prompt">System Prompt / Instructions:</label>
+                        <label class="form-label" for="translation_prompt" data-en="System Prompt / Instructions:" data-fa="دستورالعمل سیستم/راهنما:">System Prompt / Instructions:</label>
                         <textarea id="translation_prompt" name="translation_prompt" rows="8">
                         شما یک متخصص حرفه‌ای ترجمه زیرنویس هستید که به چندین زبان تسلط دارید. وظیفه اصلی شما ترجمه دقیق و طبیعی متن زیرنویس است به‌گونه‌ای که ساختار فایل زیرنویس (شامل شماره‌گذاری، زمان‌بندی و فرمت‌بندی) کاملاً حفظ شود.
 
@@ -653,67 +622,58 @@
 
                         اگر زیرنویس ورودی به صورت خودکار توسط یوتیوب ساخته شده و دارای اشتباهات نگارشی، کلمات ناقص یا جملات بی‌معنی بود، ابتدا متن هر بخش را به صورت صحیح و قابل فهم بازنویسی کن و سپس به زبان مقصد ترجمه کن. کلمات اشتباه یا ناقص را اصلاح کن و جملات نامفهوم را تا حد امکان قابل فهم و روان کن.
                         </textarea>
-                        <p class="note">Instructions for the AI model.</p>
+                        <p class="note" data-en="Instructions for the AI model." data-fa="دستورالعمل‌ها برای مدل هوش مصنوعی.">Instructions for the AI model.</p>
                     </div>
                 </div>
             </details>
 
-            <!-- Submit Button -->
             <div class="submit-container">
                 <button id="submit-button" type="submit" class="button primary-button">
-                    <span class="button-text">Translate</span>
+                    <span class="button-text" data-en="Translate" data-fa="ترجمه">Translate</span>
                     <span class="shortcut-hint">(Ctrl+Enter)</span>
                 </button>
             </div>
         </form>
 
-        <!-- Live Translation Table -->
         <div id="live-translation-table-container" style="display:none;">
             <table id="live-translation-table">
                 <thead>
                     <tr>
-                        <th style="width:40%;">Source</th>
-                        <th style="width:50%;">Translation</th>
-                        <th style="width:10%;">Actions</th>
+                        <th style="width:40%;" data-en="Source" data-fa="منبع">Source</th>
+                        <th style="width:50%;" data-en="Translation" data-fa="ترجمه">Translation</th>
+                        <th style="width:10%;" data-en="Actions" data-fa="عملیات">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Rows will be dynamically inserted -->
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
 
-        <!-- Progress Display -->
         <div class="progress-container" id="progress-container">
             <div class="progress-bar">
                 <div class="progress" id="progress"></div>
             </div>
-            <div class="progress-text" id="progress-text">0% Complete</div>
+            <div class="progress-text" id="progress-text" data-en="0% Complete" data-fa="۰٪ تکمیل شده">0% Complete</div>
             <div class="progress-details">
-                <span id="chunk-status">Processing chunk: 0/0</span>
-                <span id="time-estimate">Estimated time: calculating...</span>
+                <span id="chunk-status" data-en="Processing chunk: 0/0" data-fa="پردازش بخش: ۰/۰">Processing chunk: 0/0</span>
+                <span id="time-estimate" data-en="Estimated time: calculating..." data-fa="زمان تخمینی: در حال محاسبه...">Estimated time: calculating...</span>
             </div>
         </div>
 
-        <!-- Download Link Area -->
         <div class="download-link" id="download-link"></div>
-
-        <!-- Error Message Area -->
         <div class="error-message" id="error-message"></div>
 
-        <!-- Manual Retry Area -->
         <div id="manual-retry-section" style="display:none; margin: 20px 0;">
-            <h3 style="font-size:1.1rem; margin-bottom:10px;">Manual Retry for Failed Chunks</h3>
+            <h3 style="font-size:1.1rem; margin-bottom:10px;" data-en="Manual Retry for Failed Chunks" data-fa="تلاش مجدد دستی برای بخش‌های ناموفق">Manual Retry for Failed Chunks</h3>
             <div id="retry-chunks-list"></div>
-            <button id="retry-failed-chunks-btn" class="button primary-button" style="margin-top:10px;">Retry Failed Chunks</button>
-            <p style="font-size:0.9rem; color:#888; margin-top:8px;">You can select a different API/model before retrying.</p>
+            <button id="retry-failed-chunks-btn" class="button primary-button" style="margin-top:10px;" data-en="Retry Failed Chunks" data-fa="تلاش مجدد بخش‌های ناموفق">Retry Failed Chunks</button>
+            <p style="font-size:0.9rem; color:#888; margin-top:8px;" data-en="You can select a different API/model before retrying." data-fa="می‌توانید قبل از تلاش مجدد، API/مدل دیگری انتخاب کنید.">You can select a different API/model before retrying.</p>
         </div>
     </div>
 
     <footer class="footer">
-        <p>If you ever feel unloved, just know I love you - Created with ❤️ for subtitle translation.</p>
+        <p data-en="If you ever feel unloved, just know I love you - Created with ❤️ for subtitle translation." data-fa="اگر زمانی احساس کردی دوست‌داشتنی نیستی، بدان که من دوستت دارم - ساخته شده با ❤️ برای ترجمه زیرنویس.">If you ever feel unloved, just know I love you - Created with ❤️ for subtitle translation.</p>
         <div class="donate-section">
-            <a href="https://reymit.ir/ho3seintork" class="donate-button" id="donateButton" target="_blank" rel="noopener">Support This Project</a>
+            <a href="https://reymit.ir/ho3seintork" class="donate-button" id="donateButton" target="_blank" rel="noopener" data-en="Support This Project" data-fa="حمایت از این پروژه">Support This Project</a>
         </div>
     </footer>
 
@@ -721,6 +681,227 @@
     <script src="https://cdn.jsdelivr.net/npm/rtl-detect@1.0.3/rtl-detect.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/rtlify@0.2.2/rtlify.min.js"></script>
     <script>
+        // --- Localization ---
+        const translations = {
+            en: {
+                "app-title": "Multi-API Subtitle Translator",
+                "page-title": "Subtitle Translator",
+                "lang-toggle-text": "فارسی",
+                "clear-memory-title": "Clear translation memory",
+                "theme-toggle-title": "Toggle light/dark theme",
+                "input-method-label": "Input Method:",
+                "upload-file-label": "Upload File",
+                "paste-text-label": "Paste Text",
+                "upload-subtitle-label": "Upload Subtitle File (SRT, VTT, SSA, ASS):",
+                "dropzone-message": "Drag & drop subtitle file here<br>or click to browse",
+                "paste-srt-label": "Paste SRT Content:",
+                "youtube-url-label": "YouTube Video URL (auto-fetch subtitles):",
+                "youtube-note": "Paste a YouTube link to auto-download English subtitles for translation.",
+                "api-provider-label": "Select API Provider:",
+                "gemini-api-key-label": "Gemini API Key:",
+                "remember-key-label": "Remember key",
+                "gemini-note": "Get your API key from <a href='https://aistudio.google.com/app/apikey' target='_blank'>Google AI Studio</a>.",
+                "gemini-model-label": "Gemini Model:",
+                "gemini-quota-note": "If you get quota errors, try an older or \"flash\" model.",
+                "openai-api-key-label": "OpenAI API Key:",
+                "openai-note": "Get your API key from <a href='https://platform.openai.com/api-keys' target='_blank'>OpenAI Platform</a>.",
+                "openai-model-label": "OpenAI Model:",
+                "deepseek-api-key-label": "Deepseek API Key:",
+                "deepseek-note": "Get your API key from <a href='https://platform.deepseek.com' target='_blank'>Deepseek Platform</a>.",
+                "deepseek-model-label": "Deepseek Model:",
+                "custom-api-url-label": "Custom API Endpoint:",
+                "custom-api-url-note": "Endpoint must be OpenAI-compatible (chat/completions) or similar.",
+                "custom-api-key-label": "Custom API Key:",
+                "custom-model-name-label": "Custom Model Name:",
+                "custom-extra-headers-label": "Extra Headers (JSON):",
+                "custom-extra-headers-note": "Optional: Add extra headers as JSON.",
+                "target-language-label": "Target Language:",
+                "advanced-settings-label": "Advanced Settings",
+                "advanced-settings-warning": "⚠️ Adjusting these settings can affect performance, cost, and translation quality.",
+                "temperature-label": "Temperature:",
+                "temperature-note": "Controls randomness (0.0-2.0). Higher values = more creative/random.",
+                "base-delay-label": "Base Delay (ms):",
+                "base-delay-note": "Delay between successful chunk requests.",
+                "chunk-count-label": "Number of Chunks:",
+                "chunk-count-note": "Split subtitles into this many parts (1-100).",
+                "system-prompt-label": "System Prompt / Instructions:",
+                "system-prompt-note": "Instructions for the AI model.",
+                "translate-button": "Translate",
+                "live-table-source-header": "Source",
+                "live-table-translation-header": "Translation",
+                "live-table-actions-header": "Actions",
+                "progress-text-initial": "0% Complete",
+                "chunk-status-initial": "Processing chunk: 0/0",
+                "time-estimate-initial": "Estimated time: calculating...",
+                "manual-retry-title": "Manual Retry for Failed Chunks",
+                "retry-failed-button": "Retry Failed Chunks",
+                "retry-note": "You can select a different API/model before retrying.",
+                "footer-message": "If you ever feel unloved, just know I love you - Created with ❤️ for subtitle translation.",
+                "donate-button": "Support This Project",
+                "error-upload-file": "Please upload a subtitle file.",
+                "error-paste-srt": "Please paste subtitle content.",
+                "error-custom-api-url": "Please enter your custom API endpoint.",
+                "error-custom-model-name": "Please enter your custom model name.",
+                "error-api-key": "Please enter your {apiProvider} API key.",
+                "error-invalid-provider": "Invalid API provider selected.",
+                "error-no-content-translate": "No content to translate. The SRT file might be empty or invalid.",
+                "error-all-chunks-failed": "All translation chunks failed. Please check errors and API settings.",
+                "error-translation-failed": "Translation process failed: {errorMessage}",
+                "error-retry-no-data": "Cannot retry: Original chunk data not found.",
+                "error-retry-custom-api": "Custom API URL or Model missing for retry.",
+                "error-retry-api-key": "API Key for {apiProvider} missing for retry.",
+                "alert-no-chunks-retry": "No chunks selected for retry.",
+                "alert-subtitle-fetch-failed": "Failed to fetch subtitles or subtitles not available in English. Please try another video or paste SRT manually.\n(Note: Direct fetching from browser has limitations; a backend service is more reliable.)",
+                "alert-subtitle-fetch-success": "Subtitles fetched successfully! Ready for translation.",
+                "alert-subtitle-fetch-error": "An error occurred while trying to fetch subtitles: {errorMessage}",
+                "alert-keys-cleared": "Stored API keys and related \"remember\" preferences cleared from browser storage.",
+                "status-translating-chunk": "Translating...",
+                "status-retrying-chunk": "Retrying...",
+                "status-retranslating-chunk": "Retranslating chunk #{chunkNum}...",
+                "status-retranslation-attempt-finished": "Chunk #{chunkNum} retranslation attempt finished.",
+                "status-retrying-selected-chunks": "Retrying selected chunks...",
+                "status-retrying-batch": "Retrying {count} chunks... ({percent}%)",
+                "status-batch-retry-finished": "Batch retry finished.",
+                "download-subtitle-link": "<i class=\"fas fa-download\"></i> Download Translated Subtitle",
+                "no-download-content": "<span>No valid content to download after retry.</span>",
+                "translation-complete-success": "Translation complete! {successful}/{total} chunks successful.",
+                "translation-complete-no-download": "Translation finished, but no valid output to download.",
+                 "use-proxy-label": "Use Proxy",
+                 "use-proxy-note": "Enable if direct API access is blocked (e.g., sanctioned regions).",
+
+
+            },
+            fa: {
+                "app-title": "مترجم زیرنویس چند API",
+                "page-title": "مترجم زیرنویس",
+                "lang-toggle-text": "English",
+                "clear-memory-title": "پاک کردن حافظه ترجمه",
+                "theme-toggle-title": "تغییر پوسته روشن/تاریک",
+                "input-method-label": "روش ورودی:",
+                "upload-file-label": "بارگذاری فایل",
+                "paste-text-label": "چسباندن متن",
+                "upload-subtitle-label": "بارگذاری فایل زیرنویس (SRT, VTT, SSA, ASS):",
+                "dropzone-message": "فایل زیرنویس را اینجا بکشید و رها کنید<br>یا برای انتخاب کلیک کنید",
+                "paste-srt-label": "محتوای SRT را بچسبانید:",
+                "youtube-url-label": "آدرس ویدیوی یوتیوب (دریافت خودکار زیرنویس):",
+                "youtube-note": "لینک یوتیوب را برای دانلود خودکار زیرنویس انگلیسی جهت ترجمه، وارد کنید.",
+                "api-provider-label": "انتخاب ارائه‌دهنده API:",
+                "gemini-api-key-label": "کلید Gemini API:",
+                "remember-key-label": "ذخیره کلید",
+                "gemini-note": "کلید API خود را از <a href='https://aistudio.google.com/app/apikey' target='_blank'>Google AI Studio</a> دریافت کنید.",
+                "gemini-model-label": "مدل Gemini:",
+                "gemini-quota-note": "در صورت بروز خطای سهمیه، مدل قدیمی‌تر یا 'flash' را امتحان کنید.",
+                "openai-api-key-label": "کلید OpenAI API:",
+                "openai-note": "کلید API خود را از <a href='https://platform.openai.com/api-keys' target='_blank'>OpenAI Platform</a> دریافت کنید.",
+                "openai-model-label": "مدل OpenAI:",
+                "deepseek-api-key-label": "کلید Deepseek API:",
+                "deepseek-note": "کلید API خود را از <a href='https://platform.deepseek.com' target='_blank'>Deepseek Platform</a> دریافت کنید.",
+                "deepseek-model-label": "مدل Deepseek:",
+                "custom-api-url-label": "نقطه پایانی API سفارشی:",
+                "custom-api-url-note": "نقطه پایانی باید با OpenAI (chat/completions) یا مشابه سازگار باشد.",
+                "custom-api-key-label": "کلید API سفارشی:",
+                "custom-model-name-label": "نام مدل سفارشی:",
+                "custom-extra-headers-label": "هدرهای اضافی (JSON):",
+                "custom-extra-headers-note": "اختیاری: هدرهای اضافی را به صورت JSON اضافه کنید.",
+                "target-language-label": "زبان مقصد:",
+                "advanced-settings-label": "تنظیمات پیشرفته",
+                "advanced-settings-warning": "⚠️ تنظیم این موارد می‌تواند بر عملکرد، هزینه و کیفیت ترجمه تأثیر بگذارد.",
+                "temperature-label": "دما (Temperature):",
+                "temperature-note": "کنترل خلاقیت (۰.۰-۲.۰). مقادیر بالاتر = خلاقیت/تصادفی بودن بیشتر.",
+                "base-delay-label": "تأخیر پایه (میلی‌ثانیه):",
+                "base-delay-note": "تأخیر بین درخواست‌های موفق هر بخش.",
+                "chunk-count-label": "تعداد بخش‌ها:",
+                "chunk-count-note": "زیرنویس را به این تعداد بخش تقسیم کن (۱-۱۰۰).",
+                "system-prompt-label": "دستورالعمل سیستم/راهنما:",
+                "system-prompt-note": "دستورالعمل‌ها برای مدل هوش مصنوعی.",
+                "translate-button": "ترجمه",
+                "live-table-source-header": "منبع",
+                "live-table-translation-header": "ترجمه",
+                "live-table-actions-header": "عملیات",
+                "progress-text-initial": "۰٪ تکمیل شده",
+                "chunk-status-initial": "پردازش بخش: ۰/۰",
+                "time-estimate-initial": "زمان تخمینی: در حال محاسبه...",
+                "manual-retry-title": "تلاش مجدد دستی برای بخش‌های ناموفق",
+                "retry-failed-button": "تلاش مجدد بخش‌های ناموفق",
+                "retry-note": "می‌توانید قبل از تلاش مجدد، API/مدل دیگری انتخاب کنید.",
+                "footer-message": "اگر زمانی احساس کردی دوست‌داشتنی نیستی، بدان که من دوستت دارم - ساخته شده با ❤️ برای ترجمه زیرنویس.",
+                "donate-button": "حمایت از این پروژه",
+                "error-upload-file": "لطفاً یک فایل زیرنویس بارگذاری کنید.",
+                "error-paste-srt": "لطفاً محتوای زیرنویس را بچسبانید.",
+                "error-custom-api-url": "لطفاً نقطه پایانی API سفارشی خود را وارد کنید.",
+                "error-custom-model-name": "لطفاً نام مدل سفارشی خود را وارد کنید.",
+                "error-api-key": "لطفاً کلید API {apiProvider} خود را وارد کنید.",
+                "error-invalid-provider": "ارائه‌دهنده API نامعتبر انتخاب شده است.",
+                "error-no-content-translate": "محتوایی برای ترجمه وجود ندارد. فایل SRT ممکن است خالی یا نامعتبر باشد.",
+                "error-all-chunks-failed": "ترجمه تمام بخش‌ها ناموفق بود. لطفاً خطاها و تنظیمات API را بررسی کنید.",
+                "error-translation-failed": "فرآیند ترجمه ناموفق بود: {errorMessage}",
+                "error-retry-no-data": "امکان تلاش مجدد وجود ندارد: داده‌های بخش اصلی یافت نشد.",
+                "error-retry-custom-api": "آدرس API سفارشی یا مدل برای تلاش مجدد موجود نیست.",
+                "error-retry-api-key": "کلید API برای {apiProvider} جهت تلاش مجدد موجود نیست.",
+                "alert-no-chunks-retry": "هیچ بخشی برای تلاش مجدد انتخاب نشده است.",
+                "alert-subtitle-fetch-failed": "دریافت زیرنویس ناموفق بود یا زیرنویس به زبان انگلیسی موجود نیست. لطفاً ویدیوی دیگری را امتحان کنید یا SRT را دستی وارد کنید.\n(توجه: دریافت مستقیم از مرورگر محدودیت‌هایی دارد؛ استفاده از سرویس بک‌اند قابل اطمینان‌تر است.)",
+                "alert-subtitle-fetch-success": "زیرنویس با موفقیت دریافت شد! آماده برای ترجمه.",
+                "alert-subtitle-fetch-error": "هنگام دریافت زیرنویس خطایی رخ داد: {errorMessage}",
+                "alert-keys-cleared": "کلیدهای API ذخیره شده و تنظیمات مربوط به «ذخیره کلید» از حافظه مرورگر پاک شدند.",
+                "status-translating-chunk": "در حال ترجمه...",
+                "status-retrying-chunk": "در حال تلاش مجدد...",
+                "status-retranslating-chunk": "در حال ترجمه مجدد بخش #{chunkNum}...",
+                "status-retranslation-attempt-finished": "تلاش برای ترجمه مجدد بخش #{chunkNum} پایان یافت.",
+                "status-retrying-selected-chunks": "در حال تلاش مجدد بخش‌های انتخاب شده...",
+                "status-retrying-batch": "در حال تلاش مجدد {count} بخش... ({percent}٪)",
+                "status-batch-retry-finished": "تلاش مجدد دسته‌ای پایان یافت.",
+                "download-subtitle-link": "<i class=\"fas fa-download\"></i> دانلود زیرنویس ترجمه شده",
+                "no-download-content": "<span>محتوای معتبری برای دانلود پس از تلاش مجدد وجود ندارد.</span>",
+                "translation-complete-success": "ترجمه کامل شد! {successful}/{total} بخش موفقیت‌آمیز بود.",
+                "translation-complete-no-download": "ترجمه تمام شد، اما خروجی معتبری برای دانلود وجود ندارد.",
+                "use-proxy-label": "استفاده از پروکسی",
+                "use-proxy-note": "اگر دسترسی مستقیم به API مسدود است فعال کنید (مثلاً مناطق تحریم شده).",
+            }
+        };
+        let currentLang = localStorage.getItem('uiLang') || 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('uiLang', lang);
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+
+            document.querySelectorAll('[data-en]').forEach(el => {
+                const key = el.id || el.getAttribute('data-key') || el.dataset.en.toLowerCase().replace(/\s/g, '-').replace(/[^a-z0-9-]/g, ''); 
+                let text = translations[lang][key] || el.getAttribute(`data-${lang}`);
+
+                if (!text) { 
+                    const enText = el.dataset.en;
+                    for (const tKey in translations.en) {
+                        if (translations.en[tKey] === enText) {
+                           text = translations[lang][tKey];
+                           break;
+                        }
+                    }
+                }
+                 if (!text && el.dataset[lang]) text = el.dataset[lang]; 
+
+                if (text) {
+                    if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT' && (el.type === 'text' || el.type === 'password' || el.type === 'number')) {
+                        if (el.placeholder) el.placeholder = text;
+                    } else if (el.title) {
+                         el.title = text;
+                    }
+                    else {
+                        el.innerHTML = text; 
+                    }
+                }
+            });
+            document.getElementById('language-toggle-text').textContent = translations[lang]['lang-toggle-text'];
+            if (lang === 'fa') {
+                 document.body.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"; 
+            } else {
+                 document.body.style.fontFamily = "'Segoe UI', Arial, sans-serif";
+            }
+        }
+        // --- End Localization ---
+
+
         // DOM Elements
         const apiProviderSelect = document.getElementById('api_provider');
         const geminiApiSection = document.getElementById('gemini-api-section');
@@ -728,6 +909,7 @@
         const deepseekApiSection = document.getElementById('deepseek-api-section');
         const customApiSection = document.getElementById('custom-api-section');
         const themeToggle = document.getElementById('themeToggle');
+        const languageToggle = document.getElementById('language-toggle');
         const fileMethodRadio = document.querySelector('input[value="file"]');
         const textMethodRadio = document.querySelector('input[value="text"]');
         const fileInputSection = document.getElementById('file-input');
@@ -735,40 +917,32 @@
         const translateForm = document.getElementById('translate-form');
         const progressContainer = document.getElementById('progress-container');
         const progressBar = document.getElementById('progress');
-        const progressText = document.getElementById('progress-text');
-        const chunkStatus = document.getElementById('chunk-status');
-        const timeEstimate = document.getElementById('time-estimate');
+        const progressTextEl = document.getElementById('progress-text');
+        const chunkStatusEl = document.getElementById('chunk-status');
+        const timeEstimateEl = document.getElementById('time-estimate');
         const downloadLink = document.getElementById('download-link');
         const errorMessage = document.getElementById('error-message');
         const clearMemoryButton = document.getElementById('clear-memory-button');
-        // Live translation elements
-        const liveBox = document.getElementById('live-translation-box');
-        const liveInput = document.getElementById('live-input');
-        const liveOutput = document.getElementById('live-output');
-        // Live translation table elements
         const liveTableContainer = document.getElementById('live-translation-table-container');
         const liveTable = document.getElementById('live-translation-table');
         const liveTableBody = liveTable ? liveTable.querySelector('tbody') : null;
 
-        // Initialize Dropzone
-        Dropzone.autoDiscover = false;
-        const myDropzone = new Dropzone("#dropzone-upload", {
-            url: "#", // Not actually uploading to a server
-            autoProcessQueue: false,
-            maxFiles: 1,
-            acceptedFiles: ".srt,.vtt,.ssa,.ass",
-            addRemoveLinks: true,
-            dictDefaultMessage: "Drop files here or click to upload",
-        });
 
-        // Theme Toggle
+        Dropzone.autoDiscover = false;
+        if (document.getElementById("dropzone-upload")) {
+            const myDropzone = new Dropzone("#dropzone-upload", {
+                url: "#", autoProcessQueue: false, maxFiles: 1, acceptedFiles: ".srt,.vtt,.ssa,.ass", addRemoveLinks: true,
+                dictDefaultMessage: document.querySelector('#dropzone-upload .dz-message p').innerHTML, 
+                init: function() { window.myDropzone = this; }
+            });
+        }
+
         function toggleTheme() {
             const isDarkMode = document.body.classList.toggle('dark-mode');
             themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
             localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false');
         }
 
-        // Toggle API sections visibility based on selected provider
         apiProviderSelect.addEventListener('change', function() {
             const provider = this.value;
             geminiApiSection.style.display = provider === 'gemini' ? 'block' : 'none';
@@ -777,48 +951,40 @@
             customApiSection.style.display = provider === 'custom' ? 'block' : 'none';
         });
 
-        // Toggle password visibility for API keys
         document.querySelectorAll('.toggle-password').forEach(button => {
             button.addEventListener('click', function() {
                 const targetId = this.getAttribute('data-for');
                 const input = document.getElementById(targetId);
                 const icon = this.querySelector('i');
-                
                 if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
+                    input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash');
                 } else {
-                    input.type = 'password';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
+                    input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye');
                 }
             });
         });
 
-        // Toggle input method
         fileMethodRadio.addEventListener('change', function() {
-            if (this.checked) {
-                fileInputSection.style.display = 'block';
-                textInputSection.style.display = 'none';
-            }
+            if (this.checked) { fileInputSection.style.display = 'block'; textInputSection.style.display = 'none'; }
         });
-
         textMethodRadio.addEventListener('change', function() {
-            if (this.checked) {
-                fileInputSection.style.display = 'none';
-                textInputSection.style.display = 'block';
-            }
+            if (this.checked) { fileInputSection.style.display = 'none'; textInputSection.style.display = 'block'; }
         });
 
-        // Helper to display errors
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            progressContainer.style.display = 'none';
+        function getLocalizedString(key, replacements = {}) {
+            let str = translations[currentLang][key] || translations['en'][key] || `[${key}]`;
+            for (const placeholder in replacements) {
+                str = str.replace(`{${placeholder}}`, replacements[placeholder]);
+            }
+            return str;
         }
 
-        // Helper: Read file as text
+        function showError(messageKey, replacements = {}) {
+            errorMessage.textContent = getLocalizedString(messageKey, replacements);
+            errorMessage.style.display = 'block';
+            if (progressContainer) progressContainer.style.display = 'none';
+        }
+
         function readFileAsText(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -828,784 +994,561 @@
             });
         }
 
-        // Helper: Split SRT into chunks (by lines, not timestamps)
-        function splitSrtIntoChunks(srt, chunkCount) {
-            const lines = srt.split(/\r?\n/).filter(l => l.trim() !== '');
-            const chunkSize = Math.ceil(lines.length / chunkCount);
-            const chunks = [];
-            for (let i = 0; i < lines.length; i += chunkSize) {
-                chunks.push(lines.slice(i, i + chunkSize).join('\n'));
-            }
-            return chunks;
-        }
-
-        // Helper: Merge translated chunks for SRT output (no extra newlines, no separators)
-        function mergeChunks(chunks) {
-            // Join all chunks as-is, preserving SRT structure, and remove extra blank lines between chunks
-            let merged = chunks.map(c => {
-                if (Array.isArray(c)) {
-                    return c.map(part => typeof part === "string" ? part : (part?.text || "")).join("\n").replace(/\r\n/g, '\n').trim();
-                } else if (typeof c === "object" && c !== null) {
-                    return (c.text || "").replace(/\r\n/g, '\n').trim();
-                }
-                return (c || '').replace(/\r\n/g, '\n').trim();
-            }).join('\n\n'); // SRT blocks are separated by double newlines
-
-            // Remove accidental BOM or non-printable chars at start
-            merged = merged.replace(/^\uFEFF/, '');
-
-            // Remove extra blank lines at start/end
-            merged = merged.replace(/^\s+/, '').replace(/\s+$/, '');
-
-            // Ensure file ends with a single newline
-            merged += '\n';
-
-            return merged;
-        }
-
-        /**
-         * Fix and normalize SRT structure:
-         * - Remove duplicate/invalid numbering
-         * - Ensure each block has: number, time, text (possibly multiline), blank line
-         * - Remove empty blocks and renumber sequentially
-         * - Merge blocks with the same timecode (if any)
-         * - Remove lines that look like numbers but are not part of a valid block
-         */
-        function fixSrtStructure(srtText) {
-            // Split into lines and clean up
-            let lines = srtText.replace(/\r\n/g, '\n').split('\n').map(l => l.trimEnd());
-
-            // Parse blocks: find timecode lines and group accordingly
-            let blocks = [];
-            let current = [];
+        // --- START MODIFIED SECTION ---
+        function splitSrtIntoChunks(srtText, chunkCount) {
+            const srtBlocks = [];
+            const lines = srtText.replace(/\r\n/g, '\n').split('\n');
+            let currentBlockBuffer = [];
             for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
-                if (line.match(new RegExp("^\\d{2}:\\d{2}:\\d{2},\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2},\\d{3}$"))) {
-                    if (current.length > 0) blocks.push(current);
-                    current = [line];
-                } else if (line === '' && current.length > 0) {
-                    blocks.push(current);
-                    current = [];
-                } else if (line !== '') {
-                    current.push(line);
-                }
-            }
-            if (current.length > 0) blocks.push(current);
-
-            // Merge blocks with the same timecode (fixes duplicate time blocks)
-            let mergedBlocks = [];
-            let seenTimes = new Set();
-            for (let block of blocks) {
-                let timeIdx = block.findIndex(l => l.match(new RegExp("^\\d{2}:\\d{2}:\\d{2},\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2},\\d{3}$")));
-                if (timeIdx === -1) continue;
-                let time = block[timeIdx].trim();
-                let text = block.slice(timeIdx + 1).filter(l => l && !/^\d+$/.test(l));
-                if (seenTimes.has(time)) {
-                    let prev = mergedBlocks.find(b => b.time === time);
-                    if (prev) prev.text = prev.text.concat(text);
+                const line = lines[i];
+                if (/^\d+$/.test(line.trim()) && currentBlockBuffer.length > 0 && currentBlockBuffer.some(l => l.includes('-->'))) {
+                    if (currentBlockBuffer.join('\n').trim() !== "") {
+                        srtBlocks.push(currentBlockBuffer.join('\n'));
+                    }
+                    currentBlockBuffer = [line];
                 } else {
-                    mergedBlocks.push({ time, text: text.slice() });
-                    seenTimes.add(time);
+                    currentBlockBuffer.push(line);
                 }
             }
-
-            // Remove empty blocks and renumber
-            let fixedBlocks = [];
-            let num = 1;
-            for (let b of mergedBlocks) {
-                if (!b.text.length || b.text.every(l => !l.trim())) continue;
-                fixedBlocks.push([
-                    String(num++),
-                    b.time,
-                    ...b.text
-                ].join('\n'));
+            if (currentBlockBuffer.join('\n').trim() !== "") {
+                srtBlocks.push(currentBlockBuffer.join('\n'));
             }
 
-            return fixedBlocks.join('\n\n') + '\n';
+            if (srtBlocks.length === 0) return [];
+
+            const numChunks = Math.max(1, Math.min(chunkCount, srtBlocks.length));
+            const idealChunkSizeInBlocks = Math.ceil(srtBlocks.length / numChunks);
+            const finalChunks = [];
+            for (let i = 0; i < srtBlocks.length; i += idealChunkSizeInBlocks) {
+                let chunkContent = srtBlocks.slice(i, i + idealChunkSizeInBlocks).join('\n\n');
+                if (chunkContent.trim() !== "") { // Ensure we don't add empty chunks
+                     finalChunks.push(chunkContent + '\n\n'); // Add double newline after each block set
+                }
+            }
+             // Clean up trailing newlines from the very last chunk
+            if (finalChunks.length > 0) {
+                finalChunks[finalChunks.length - 1] = finalChunks[finalChunks.length - 1].trimEnd();
+            }
+            return finalChunks.filter(chunk => chunk.trim() !== "");
         }
 
-        // Helper: Detect if a string is mostly RTL (e.g. Persian/Arabic/Hebrew)
+        function mergeChunks(translatedChunks) {
+            return translatedChunks
+                .filter(chunk => chunk && typeof chunk === 'string' && !chunk.startsWith('[ERROR]'))
+                .map(chunk => chunk.trim())
+                .join('\n\n')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim(); // Trim at the very end before adding final newline
+        }
+        
+        function fixSrtStructure(srtText) {
+            if (!srtText || typeof srtText !== 'string' || srtText.trim() === '') {
+                return '';
+            }
+            let cleanSrt = srtText.replace(/\r\n/g, '\n').replace(/^\uFEFF/, '');
+            cleanSrt = cleanSrt.split('\n').filter(line => {
+                const trimmedLine = line.trim().toLowerCase();
+                return !(/^srt$/i.test(trimmedLine) ||
+                         /^\[srt\]$/i.test(trimmedLine) ||
+                         /^subtitle$/i.test(trimmedLine) ||
+                         /^subtitles$/i.test(trimmedLine) ||
+                         /^here is the srt:$/i.test(trimmedLine) ||
+                         /^here are the subtitles:$/i.test(trimmedLine) ||
+                         /^```srt/.test(trimmedLine) || 
+                         /^```$/.test(trimmedLine) 
+                        );
+            }).join('\n');
+
+            const rawBlocks = cleanSrt.split(/\n\s*\n/); 
+            const validBlocks = [];
+            let srtIndex = 1;
+
+            for (const rawBlock of rawBlocks) {
+                if (rawBlock.trim() === '') continue;
+                const lines = rawBlock.split('\n').map(l => l.trimEnd());
+                let timeLine = '';
+                const textLines = [];
+                let foundTime = false;
+
+                for (let i = 0; i < lines.length; i++) {
+                    const currentLine = lines[i].trim();
+                    if (/^\d{1,2}:\d{2}:\d{2}[,.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,.]\d{3}/.test(currentLine)) {
+                        if (!foundTime) {
+                            timeLine = currentLine.replace('.', ',');
+                            foundTime = true;
+                        } else {
+                            textLines.push(lines[i]);
+                        }
+                    } else if (/^\d+$/.test(currentLine)) {
+                        if (!foundTime && (i + 1 < lines.length && /^\d{1,2}:\d{2}:\d{2}[,.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,.]\d{3}/.test(lines[i+1].trim()))) {
+                            // This is a number before a valid timestamp, ignore it as we renumber.
+                        } else {
+                             textLines.push(lines[i]); // Treat as text if not a clear number for a new block
+                        }
+                    } else if (lines[i].trim() !== '' || (textLines.length > 0 && lines[i] === '')) { // Keep empty lines if they are part of multi-line text
+                        textLines.push(lines[i]);
+                    }
+                }
+
+                if (timeLine && textLines.join('').trim() !== '') {
+                    let block = srtIndex + '\n';
+                    block += timeLine + '\n';
+                    block += textLines.join('\n').trimEnd();
+                    validBlocks.push(block);
+                    srtIndex++;
+                }
+            }
+            if (validBlocks.length === 0) return "";
+            return validBlocks.join('\n\n') + '\n'; 
+        }
+
+        function isPersianLike(langName) {
+            if (!langName || typeof langName !== 'string') return false;
+            return /fa|farsi|persian/i.test(langName.toLowerCase());
+        }
+
+        function postProcessTranslatedChunkText(text, targetLang) {
+            if (typeof text !== 'string') return (text || '').trim();
+            let processedText = text
+                .replace(/^```srt\s*/i, '')
+                .replace(/\s*```$/, '')
+                .replace(/^[\s\S]*?(\d+\s*\n\d{2}:\d{2}:\d{2}[,.]\d{3}\s*-->)/, '$1')
+                .trim();
+
+            if (isPersianLike(targetLang) && typeof rtlit === 'function') {
+                const lines = processedText.split('\n');
+                const rtlProcessedLines = lines.map(line => {
+                    if (!/^\d+$/.test(line.trim()) && !/-->/.test(line)) {
+                        return rtlit(line);
+                    }
+                    return line;
+                });
+                processedText = rtlProcessedLines.join('\n');
+            }
+            return processedText.trim();
+        }
+
+        function applyRtlToSrt(srtText) {
+            if (!srtText || typeof srtText !== 'string' || typeof rtlit !== 'function') {
+                if (typeof rtlit !== 'function') {
+                    console.warn("rtlify library not found. RTL formatting might be incomplete.");
+                }
+                return srtText;
+            }
+            const targetLangInput = document.getElementById('lang-input').value;
+            if (!isPersianLike(targetLangInput)) {
+                return srtText;
+            }
+
+            let blocks = srtText.split(/\n\n(?!\n)/); 
+            let outBlocks = blocks.map(block => {
+                if (!block.trim()) return block;
+                let lines = block.split('\n');
+                let timeIndex = lines.findIndex(l => l.includes('-->'));
+                if (timeIndex === -1) return block;
+                let textLines = lines.slice(timeIndex + 1);
+                if (textLines.every(line => !line.trim())) return block;
+                
+                let processedTextLines = textLines.map(line => rtlit(line));
+                return [...lines.slice(0, timeIndex + 1), ...processedTextLines].join('\n');
+            });
+            return outBlocks.join('\n\n').trim() + '\n';
+        }
+        // --- END MODIFIED SECTION ---
+
+
         function isRtlText(text) {
-            if (window.rtlDetect && rtlDetect.isRtlLang) {
-                return rtlDetect.isRtlLang('fa') || rtlDetect.isRtlLang('ar') || rtlDetect.isRtlLang('he');
+            if (!text) return false;
+            if (window.rtlDetect && typeof rtlDetect.isRtlLang === 'function') {
+                const rtlLangs = ['fa', 'ar', 'he', 'ur', 'yi', 'syc', 'dv'];
+                const langPart = String(text).substring(0, 2).toLowerCase();
+                if (rtlLangs.includes(langPart)) return true;
+                return rtlDetect.isRtlLang(text) || /[\u0600-\u06FF\u0750-\u077F\u0590-\u05FF]/.test(text);
             }
             return /[\u0600-\u06FF\u0750-\u077F\u0590-\u05FF]/.test(text);
         }
 
-        // Helper: Apply RTL formatting to SRT text blocks if needed
-        function applyRtlToSrt(srtText) {
-            let blocks = srtText.split(/\r?\n\r?\n/);
-            let outBlocks = blocks.map(block => {
-                let lines = block.split('\n');
-                let idx = lines.findIndex(l => l.match(new RegExp("^\\d{2}:\\d{2}:\\d{2},\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2},\\d{3}$")));
-                if (idx === -1) return block;
-                let textLines = lines.slice(idx + 1);
-                let rtlCount = textLines.filter(isRtlText).length;
-                if (textLines.length > 0 && rtlCount / textLines.length > 0.5) {
-                    let rtlTextLines = textLines.map(line => {
-                        let processed = line.replace(/([A-Za-z0-9_]+)/g, '\u202A$1\u202C');
-                        return '\u202B' + processed + '\u202C';
-                    });
-                    return [...lines.slice(0, idx + 1), ...rtlTextLines].join('\n');
-                }
-                return block;
-            });
-            return outBlocks.join('\n\n');
-        }
 
-        // Helper: Detect translation error (simple heuristic)
         function isTranslationError(text) {
-            if (!text) return true;
-            if (text.startsWith('[ERROR]')) return true;
-            if (/error|quota|unexpected|unsupported|failed|limit/i.test(text)) return true;
+            if (!text || typeof text !== 'string') return true;
+            const trimmedText = text.trim();
+            if (trimmedText === '') return true;
+            if (trimmedText.startsWith('[ERROR]')) return true;
+            const errorKeywords = ['error', 'quota', 'unexpected', 'unsupported', 'failed', 'limit', 'cannot translate', 'unable to process', 'invalid request', 'api key', 'authentication', 'forbidden', 'not found', 'no translation available', 'try again later'];
+            for (const keyword of errorKeywords) { if (trimmedText.toLowerCase().includes(keyword)) return true; }
+            const instructionPhrases = ['translate the following', 'translation:', 'output:', 'here is the translation'];
+            for (const phrase of instructionPhrases) { if (trimmedText.toLowerCase().startsWith(phrase) && trimmedText.length < phrase.length + 25) return true; } 
+            if (!/\d{1,2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2},\d{3}/.test(trimmedText) && trimmedText.length < 50 && !trimmedText.includes('\n')) { 
+                 if (trimmedText.toLowerCase().includes("i cannot fulfill this request") || trimmedText.toLowerCase().includes("i am unable to") || trimmedText.toLowerCase().includes("as an ai")) return true;
+            }
             return false;
         }
 
-        // Helper: Escape HTML for safe display
         function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>"']/g, function(m) {
-                return ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;'
-                })[m];
-            });
+            if (typeof str !== 'string') return '';
+            return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
         }
 
-        // Render the live translation table
         function renderLiveTranslationTable(sourceChunks, translatedChunks, onCorrect) {
-            if (!liveTableBody) return; // Prevent null reference error
+            if (!liveTableBody) return;
             liveTableBody.innerHTML = '';
-            for (let i = 0; i < sourceChunks.length; i++) {
-                const src = sourceChunks[i] || '';
-                const trn = translatedChunks[i] || '';
-                const isRtl = isRtlText(trn || src);
-                const error = isTranslationError(trn);
+            const displayChunks = Array.isArray(sourceChunks) ? sourceChunks : [sourceChunks];
+            const displayTranslations = Array.isArray(translatedChunks) ? translatedChunks : [translatedChunks];
+
+            for (let i = 0; i < displayChunks.length; i++) {
+                const src = displayChunks[i] || '';
+                const trn = displayTranslations[i] || '';
+                const srcIsRtl = isRtlText(src);
+                const trnIsRtl = isRtlText(trn) || (isPersianLike(document.getElementById('lang-input').value) && trn); 
+                const errorInTranslation = isTranslationError(trn);
+
                 const tr = document.createElement('tr');
                 const tdSrc = document.createElement('td');
-                tdSrc.className = isRtlText(src) ? 'rtl-cell' : 'ltr-cell';
-                tdSrc.innerHTML = `<pre style="margin:0;background:none;border:none;padding:0;font-family:inherit;">${escapeHtml(src)}</pre>`;
+                tdSrc.className = srcIsRtl ? 'rtl-cell' : 'ltr-cell';
+                tdSrc.innerHTML = `<pre style="margin:0;background:none;border:none;padding:0;font-family:inherit;white-space:pre-wrap;word-break:break-word;">${escapeHtml(src)}</pre>`;
                 const tdTrn = document.createElement('td');
-                tdTrn.className = isRtl ? 'rtl-cell' : 'ltr-cell';
-                if (error) tdTrn.classList.add('translation-error');
-                tdTrn.innerHTML = `<pre style="margin:0;background:none;border:none;padding:0;font-family:inherit;">${escapeHtml(trn)}</pre>`;
+                tdTrn.className = trnIsRtl ? 'rtl-cell' : 'ltr-cell';
+                if (errorInTranslation) tdTrn.classList.add('translation-error');
+                tdTrn.innerHTML = `<pre style="margin:0;background:none;border:none;padding:0;font-family:inherit;white-space:pre-wrap;word-break:break-word;">${escapeHtml(trn)}</pre>`;
                 const tdAct = document.createElement('td');
-                if (error) {
+                tdAct.style.textAlign = 'center';
+                if (errorInTranslation) {
                     const btn = document.createElement('button');
                     btn.className = 'correction-btn';
-                    btn.textContent = 'Retry';
+                    btn.innerHTML = '<i class="fas fa-redo"></i> Retry';
                     btn.onclick = () => onCorrect(i);
                     tdAct.appendChild(btn);
                 } else {
-                    tdAct.innerHTML = '';
+                    tdAct.innerHTML = '<i class="fas fa-check" style="color:green;"></i>';
                 }
-                tr.appendChild(tdSrc);
-                tr.appendChild(tdTrn);
-                tr.appendChild(tdAct);
+                tr.appendChild(tdSrc); tr.appendChild(tdTrn); tr.appendChild(tdAct);
                 liveTableBody.appendChild(tr);
             }
         }
 
-        // Main translation logic (sequential, show one chunk at a time)
-        async function realTranslation() {
-            try {
-                let srtContent = '';
+        async function callTranslationAPI(apiFn, apiKey, model, prompt, targetLang, chunk, temperature, customApiUrl, customExtraHeaders) {
+            if (apiFn === translateWithCustom) {
+                return await apiFn(customApiUrl, apiKey, model, prompt, targetLang, chunk, temperature, customExtraHeaders);
+            }
+            return await apiFn(apiKey, model, prompt, targetLang, chunk, temperature);
+        }
+        
+        async function translateWithOpenAI(apiKey, model, prompt, targetLang, chunk, temperature) {
+            const endpoint = "https://api.openai.com/v1/chat/completions";
+            const body = { model, messages: [{ role: "system", content: `${prompt}\nTarget language: ${targetLang}` },{ role: "user", content: `Translate the following subtitle lines to ${targetLang}:\n${chunk}` }], temperature, max_tokens: 4096 };
+            const resp = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey }, body: JSON.stringify(body) });
+            if (!resp.ok) { let e = await resp.text(); try { e = JSON.parse(e).error.message; } catch (_) {} throw new Error(`HTTP ${resp.status}: ${e}`); }
+            const data = await resp.json();
+            const content = data.choices?.[0]?.message?.content || "";
+            return postProcessTranslatedChunkText(content, targetLang); // Changed
+        }
+
+        async function translateWithGemini(apiKey, model, prompt, targetLang, chunk, temperature) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            const body = { contents: [{ parts: [{ "text": `${prompt}\nTarget language: ${targetLang}\n\nTranslate the following subtitle lines to ${targetLang}:\n${chunk}` }] }], generationConfig: { temperature, maxOutputTokens: 8192 }, safetySettings: [{ "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },{ "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },{ "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },{ "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" }] };
+            const resp = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            if (!resp.ok) { let e = await resp.text(); try { e = JSON.parse(e).error.message; } catch (_) {} throw new Error(`HTTP ${resp.status}: ${e}`); }
+            const data = await resp.json();
+            if (data.promptFeedback?.blockReason) throw new Error(`Blocked: ${data.promptFeedback.blockReason}`);
+            const content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            return postProcessTranslatedChunkText(content, targetLang); // Changed
+        }
+        
+        async function translateWithDeepseek(apiKey, model, prompt, targetLang, chunk, temperature) {
+            const endpoint = "https://api.deepseek.com/chat/completions";
+            const body = { model, messages: [{ role: "system", content: `${prompt}\nTarget language: ${targetLang}` },{ role: "user", content: `Translate the following subtitle lines to ${targetLang}:\n${chunk}` }], temperature, max_tokens: 4096 };
+            const resp = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey }, body: JSON.stringify(body) });
+            if (!resp.ok) { let e = await resp.text(); try { e = JSON.parse(e).error.message; } catch (_) {} throw new Error(`HTTP ${resp.status}: ${e}`); }
+            const data = await resp.json();
+            const content = data.choices?.[0]?.message?.content || "";
+            return postProcessTranslatedChunkText(content, targetLang); // Changed
+        }
+
+        async function translateWithCustom(customApiUrl, apiKey, model, prompt, targetLang, chunk, temperature, customExtraHeadersString) {
+            if (!customApiUrl || !customApiUrl.startsWith('http')) throw new Error('Invalid Custom API Endpoint URL');
+            const body = { model, messages: [{ role: "system", content: `${prompt}\nTarget language: ${targetLang}` },{ role: "user", content: `Translate the following subtitle lines to ${targetLang}:\n${chunk}` }], temperature, max_tokens: 4096 };
+            let headers = { "Content-Type": "application/json" };
+            if (apiKey) headers["Authorization"] = "Bearer " + apiKey;
+            if (customExtraHeadersString) try { headers = { ...headers, ...JSON.parse(customExtraHeadersString) }; } catch (e) { console.warn("Invalid custom_extra_headers JSON:", e); }
+            const resp = await fetch(customApiUrl, { method: "POST", headers, body: JSON.stringify(body) });
+            if (!resp.ok) { let e = await resp.text(); try { e = JSON.parse(e).error.message || JSON.parse(e).message ; } catch (_) {} throw new Error(`HTTP ${resp.status}: ${e}`); }
+            const data = await resp.json();
+            const content = data.choices?.[0]?.message?.content || "";
+            return postProcessTranslatedChunkText(content, targetLang); // Changed
+        }
+
+        async function processTranslationCycle(isRetry = false, specificChunkIndex = -1) {
+            let srtContent = '';
+            if (!isRetry) { 
                 if (fileMethodRadio.checked) {
-                    if (myDropzone.files.length === 0) {
-                        showError('Please upload a subtitle file.');
-                        return;
-                    }
-                    srtContent = await readFileAsText(myDropzone.files[0]);
+                    if (!window.myDropzone || window.myDropzone.files.length === 0) { showError('error-upload-file'); return; }
+                    srtContent = await readFileAsText(window.myDropzone.files[0]);
                 } else {
                     srtContent = document.getElementById('srt_text').value.trim();
-                    if (!srtContent) {
-                        showError('Please paste subtitle content.');
-                        return;
-                    }
+                    if (!srtContent) { showError('error-paste-srt'); return; }
                 }
-
-                const apiProvider = apiProviderSelect.value;
-                let apiKey = '';
-                let model = '';
-                let customApiUrl = '';
-                let customExtraHeaders = '';
-                if (apiProvider === 'openai') {
-                    apiKey = document.getElementById('openai_api_key').value;
-                    model = document.getElementById('openai_model').value;
-                } else if (apiProvider === 'gemini') {
-                    apiKey = document.getElementById('gemini_api_key').value;
-                    model = document.getElementById('gemini_model').value;
-                } else if (apiProvider === 'deepseek') {
-                    apiKey = document.getElementById('deepseek_api_key').value;
-                    model = document.getElementById('deepseek_model').value;
-                } else if (apiProvider === 'custom') {
-                    customApiUrl = document.getElementById('custom_api_url').value;
-                    apiKey = document.getElementById('custom_api_key').value;
-                    model = document.getElementById('custom_model').value;
-                    customExtraHeaders = document.getElementById('custom_extra_headers').value;
-                    if (!customApiUrl) {
-                        showError('Please enter your custom API endpoint.');
-                        return;
-                    }
-                    if (!model) {
-                        showError('Please enter your custom model name.');
-                        return;
-                    }
-                }
-                const targetLang = document.getElementById('lang-input').value;
-                const temperature = parseFloat(document.getElementById('temperature').value);
-                const chunkCount = parseInt(document.getElementById('chunk_count').value);
-                const prompt = document.getElementById('translation_prompt').value;
-
-                const chunks = splitSrtIntoChunks(srtContent, chunkCount);
-                const translatedChunks = new Array(chunks.length);
-                progressBar.style.width = '0%';
-                progressText.textContent = '0% Complete';
-                chunkStatus.textContent = `Processing chunk: 0/${chunks.length}`;
-                timeEstimate.textContent = '';
-
-                lastChunks = chunks;
-                lastTranslatedChunks = translatedChunks;
-                lastApiProvider = apiProvider;
-                lastPrompt = prompt;
-                lastTargetLang = targetLang;
-                lastTemperature = temperature;
-                lastModel = model;
-                lastApiKey = apiKey;
-
-                document.getElementById('manual-retry-section').style.display = 'none';
-
-                // Show live translation table for current chunk only
-                if (liveTableContainer) liveTableContainer.style.display = 'block';
-                if (liveTableBody) liveTableBody.innerHTML = '';
-
-                // Hide old live box
-                if (liveBox) liveBox.style.display = 'none';
-
-                // Sequential translation: show each chunk as it's being translated
-                for (let idx = 0; idx < chunks.length; idx++) {
-                    let translated = '';
-                    // Show only current chunk in table
-                    if (liveTableBody) {
-                        liveTableBody.innerHTML = '';
-                        renderLiveTranslationTable([chunks[idx]], [translatedChunks[idx]], () => {});
-                    }
-                    try {
-                        if (apiProvider === 'openai') {
-                            translated = await translateWithOpenAI(apiKey, model, prompt, targetLang, chunks[idx], temperature);
-                        } else if (apiProvider === 'deepseek') {
-                            translated = await translateWithDeepseek(apiKey, model, prompt, targetLang, chunks[idx], temperature);
-                        } else if (apiProvider === 'gemini') {
-                            translated = await translateWithGemini(apiKey, model, prompt, targetLang, chunks[idx], temperature);
-                        } else if (apiProvider === 'custom') {
-                            translated = await translateWithCustom(customApiUrl, apiKey, model, prompt, targetLang, chunks[idx], temperature, customExtraHeaders);
-                        } else {
-                            showError('Translation provider not supported.');
-                            translatedChunks[idx] = '[ERROR]: Translation provider not supported.';
-                            continue;
-                        }
-                        // Remove invisible/extra Unicode chars (like U+202A, U+202B, U+202C, U+200E, U+200F, U+202D, U+202E)
-                        // Also remove common LLM "continuation" or "translation continues" lines
-                        translatedChunks[idx] = (translated || '')
-                            .replace(/[\u202A\u202B\u202C\u202D\u202E\u200E\u200F]/g, '')
-                            .replace(/^\s*\(?ترجمه ادامه متن.*\)?\s*$/gmi, '') // Remove Persian "translation continues" lines
-                            .replace(/^\s*\(?translation continues.*\)?\s*$/gmi, '') // Remove English "translation continues" lines
-                            .replace(/^\s*\(?continued.*\)?\s*$/gmi, '') // Remove "continued" lines
-                            .replace(/^\s*\(?see next chunk.*\)?\s*$/gmi, '') // Remove "see next chunk" lines
-                            .replace(/^\s*\(?continue[d]?.*\)?\s*$/gmi, '') // Remove "continue" lines
-                            .replace(/^\s*\(?ادامه.*\)?\s*$/gmi, '') // Remove Persian "ادامه" lines
-                            .trim();
-                    } catch (err) {
-                        translatedChunks[idx] = `[ERROR]: ${err.message || err}`;
-                    }
-                    progressBar.style.width = Math.round(((idx + 1) / chunks.length) * 100) + '%';
-                    progressText.textContent = `${Math.round(((idx + 1) / chunks.length) * 100)}% Complete`;
-                    chunkStatus.textContent = `Processing chunk: ${idx + 1}/${chunks.length}`;
-                    // Show only current chunk in table
-                    if (liveTableBody) {
-                        liveTableBody.innerHTML = '';
-                        renderLiveTranslationTable([chunks[idx]], [translatedChunks[idx]], () => {});
-                    }
-                }
-
-                // After all chunks, show only failed ones in the table
-                const failedIdxs = [];
-                for (let i = 0; i < translatedChunks.length; i++) {
-                    if (!translatedChunks[i] || translatedChunks[i].startsWith('[ERROR]') || translatedChunks[i].trim() === '') {
-                        failedIdxs.push(i);
-                    }
-                }
-                if (liveTableBody) {
-                    liveTableBody.innerHTML = '';
-                    if (failedIdxs.length > 0) {
-                        const failedChunks = failedIdxs.map(i => chunks[i]);
-                        const failedTranslations = failedIdxs.map(i => translatedChunks[i]);
-                        renderLiveTranslationTable(failedChunks, failedTranslations, (relIdx) => retrySingleChunk(failedIdxs[relIdx]));
-                    }
-                }
-
-                // Merge and offer download
-                const merged = mergeChunks(translatedChunks);
-                const fixedSrt = fixSrtStructure(merged);
-                let outputSrt = fixedSrt;
-                if (/fa|farsi|persian/i.test(document.getElementById('lang-input').value)) {
-                    outputSrt = applyRtlToSrt(fixedSrt);
-                }
-                const blob = new Blob([outputSrt], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                downloadLink.innerHTML = `
-                    <a href="${url}" download="translated_subtitle.srt">
-                        <i class="fas fa-download"></i> Download Translated Subtitle
-                    </a>
-                `;
-                progressText.textContent = "Translation complete!";
-                chunkStatus.textContent = "";
-                timeEstimate.textContent = "";
-
-                showManualRetryIfNeeded();
-
-            } catch (err) {
-                showError('Translation failed: ' + (err.message || err));
-                if (liveTableContainer) liveTableContainer.style.display = 'none';
             }
-        }
 
-        async function retrySingleChunk(idx) {
             const apiProvider = apiProviderSelect.value;
-            let apiKey = '';
-            let model = '';
-            let customApiUrl = '';
-            let customExtraHeaders = '';
-            if (apiProvider === 'openai') {
-                apiKey = document.getElementById('openai_api_key').value;
-                model = document.getElementById('openai_model').value;
-            } else if (apiProvider === 'gemini') {
-                apiKey = document.getElementById('gemini_api_key').value;
-                model = document.getElementById('gemini_model').value;
-            } else if (apiProvider === 'deepseek') {
-                apiKey = document.getElementById('deepseek_api_key').value;
-                model = document.getElementById('deepseek_model').value;
-            } else if (apiProvider === 'custom') {
-                customApiUrl = document.getElementById('custom_api_url').value;
-                apiKey = document.getElementById('custom_api_key').value;
-                model = document.getElementById('custom_model').value;
-                customExtraHeaders = document.getElementById('custom_extra_headers').value;
+            let apiKey = '', model = '', customApiUrl = '', customExtraHeaders = '';
+            let translationFunction;
+
+            switch(apiProvider) {
+                case 'gemini':
+                    apiKey = document.getElementById('gemini_api_key').value; model = document.getElementById('gemini_model').value; translationFunction = translateWithGemini; break;
+                case 'openai':
+                    apiKey = document.getElementById('openai_api_key').value; model = document.getElementById('openai_model').value; translationFunction = translateWithOpenAI; break;
+                case 'deepseek':
+                    apiKey = document.getElementById('deepseek_api_key').value; model = document.getElementById('deepseek_model').value; translationFunction = translateWithDeepseek; break;
+                case 'custom':
+                    customApiUrl = document.getElementById('custom_api_url').value; apiKey = document.getElementById('custom_api_key').value; model = document.getElementById('custom_model').value; customExtraHeaders = document.getElementById('custom_extra_headers').value;
+                    if (!customApiUrl) { showError('error-custom-api-url'); return; } if (!model) { showError('error-custom-model-name'); return; }
+                    translationFunction = translateWithCustom; break;
+                default: showError('error-invalid-provider'); return;
             }
+            if (apiProvider !== 'custom' && !apiKey) { showError('error-api-key', {apiProvider}); return; }
+
             const targetLang = document.getElementById('lang-input').value;
             const temperature = parseFloat(document.getElementById('temperature').value);
+            const chunkCount = parseInt(document.getElementById('chunk_count').value);
+            const baseDelay = parseInt(document.getElementById('base_delay').value);
             const prompt = document.getElementById('translation_prompt').value;
 
+            if (!isRetry) {
+                originalSrtChunks = splitSrtIntoChunks(srtContent, chunkCount); // MODIFIED
+                if (originalSrtChunks.length === 0) { showError('error-no-content-translate'); return; }
+                translatedSrtChunks = new Array(originalSrtChunks.length).fill('');
+            }
+            
             progressContainer.style.display = 'block';
-            progressText.textContent = `Retranslating chunk #${idx+1}...`;
+            downloadLink.innerHTML = '';
+            errorMessage.style.display = 'none';
+            if (liveTableContainer && !isRetry) liveTableContainer.style.display = 'block';
+            if (liveTableBody && !isRetry) liveTableBody.innerHTML = '';
 
-            try {
-                let translated = '';
-                if (apiProvider === 'openai') {
-                    translated = await translateWithOpenAI(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
-                } else if (apiProvider === 'deepseek') {
-                    translated = await translateWithDeepseek(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
-                } else if (apiProvider === 'gemini') {
-                    translated = await translateWithGemini(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
-                } else if (apiProvider === 'custom') {
-                    translated = await translateWithCustom(customApiUrl, apiKey, model, prompt, targetLang, lastChunks[idx], temperature, customExtraHeaders);
+            let successfulTranslationsThisRun = 0; // For progress bar during this specific run
+            const chunksToProcess = specificChunkIndex !== -1 ? [specificChunkIndex] : 
+                                    isRetry ? Array.from(document.querySelectorAll('.retry-chunk-checkbox:checked')).map(cb => parseInt(cb.value)) 
+                                            : originalSrtChunks.map((_, i) => i);
+            
+            if (chunksToProcess.length === 0 && isRetry) { 
+                alert(getLocalizedString('alert-no-chunks-retry')); 
+                if (document.getElementById('retry-failed-chunks-btn')) document.getElementById('retry-failed-chunks-btn').disabled = false;
+                return; 
+            }
+            
+            const totalChunksInThisRun = chunksToProcess.length;
+            let overallProgressCounter = translatedSrtChunks.filter(c => c && !isTranslationError(c)).length;
+
+
+            for (const idx of chunksToProcess) {
+                const currentOverallChunkNum = originalSrtChunks.findIndex((_,chunk_idx) => chunk_idx === idx) +1;
+
+                if (isRetry) {
+                    progressTextEl.textContent = getLocalizedString('status-retrying-batch', { count: totalChunksInThisRun, percent: Math.round((successfulTranslationsThisRun / totalChunksInThisRun) * 100) });
+                    chunkStatusEl.textContent = getLocalizedString('status-retranslating-chunk', {chunkNum: currentOverallChunkNum});
                 } else {
-                    lastTranslatedChunks[idx] = '[ERROR]: Translation provider not supported.';
+                    progressTextEl.textContent = getLocalizedString('progress-text-initial').replace('0', Math.round(((overallProgressCounter) / originalSrtChunks.length) * 100));
+                    chunkStatusEl.textContent = getLocalizedString('chunk-status-initial').replace('0/0', `${overallProgressCounter + 1}/${originalSrtChunks.length}`);
                 }
-                if (translated && !translated.startsWith('[ERROR]')) {
-                    lastTranslatedChunks[idx] = translated.trim();
-                }
-            } catch (err) {
-                lastTranslatedChunks[idx] = `[ERROR]: ${err.message || err}`;
-            }
-            renderLiveTranslationTable(lastChunks, lastTranslatedChunks, retrySingleChunk);
 
-            const merged = mergeChunks(lastTranslatedChunks);
-            const fixedSrt = fixSrtStructure(merged);
-            let outputSrt = fixedSrt;
-            if (/fa|farsi|persian/i.test(document.getElementById('lang-input').value)) {
-                outputSrt = applyRtlToSrt(fixedSrt);
+                renderLiveTranslationTable([originalSrtChunks[idx]], [translatedSrtChunks[idx] || (isRetry ? getLocalizedString('status-retrying-chunk') : getLocalizedString('status-translating-chunk'))], (failedIdxInTable) => processTranslationCycle(true, idx));
+                
+                try {
+                    const rawTranslatedText = await callTranslationAPI(translationFunction, apiKey, model, prompt, targetLang, originalSrtChunks[idx], temperature, customApiUrl, customExtraHeaders);
+                    // postProcessTranslatedChunkText is now called inside each translation API function.
+                    // The cleaning of BIDI and continuation phrases should happen after postProcess
+                    translatedSrtChunks[idx] = (rawTranslatedText || '')
+                        .replace(/[\u202A\u202B\u202C\u202D\u202E\u200E\u200F]/g, '') 
+                        .replace(/^\s*\(?ترجمه ادامه متن.*\)?\s*$/gmi, '')
+                        .replace(/^\s*\(?translation continues.*\)?\s*$/gmi, '')
+                        .replace(/^\s*\(?ادامه دارد...\)?\s*$/gmi, '')
+                        .trim();
+                    
+                    if (!isTranslationError(translatedSrtChunks[idx])) {
+                        successfulTranslationsThisRun++;
+                        if (!isRetry || (isRetry && chunksToProcess.includes(idx))) { // if it's a fresh run, or if this retried chunk was successful
+                           if (translatedSrtChunks.filter(c => c && !isTranslationError(c)).length > overallProgressCounter) {
+                               overallProgressCounter = translatedSrtChunks.filter(c => c && !isTranslationError(c)).length;
+                           }
+                        }
+                    }
+                } catch (err) {
+                    translatedSrtChunks[idx] = `[ERROR] Chunk ${currentOverallChunkNum}: ${err.message || err}`;
+                }
+                
+                renderLiveTranslationTable([originalSrtChunks[idx]], [translatedSrtChunks[idx]], (failedIdxInTable) => processTranslationCycle(true, idx));
+                progressBar.style.width = `${Math.round(((overallProgressCounter) / originalSrtChunks.length) * 100)}%`;
+
+                if (chunksToProcess.indexOf(idx) < totalChunksInThisRun - 1) await new Promise(resolve => setTimeout(resolve, baseDelay));
             }
-            const blob = new Blob([outputSrt], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            downloadLink.innerHTML = `
-                <a href="${url}" download="translated_subtitle.srt">
-                    <i class="fas fa-download"></i> Download Translated Subtitle
-                </a>
-            `;
-            progressText.textContent = "Retranslation complete!";
-            setTimeout(() => { progressContainer.style.display = 'none'; }, 1000);
+            
+            const finalMergedSrt = mergeChunks(translatedSrtChunks); // MODIFIED
+            const finalFixedSrt = fixSrtStructure(finalMergedSrt);   // MODIFIED
+            let finalOutputSrt = finalFixedSrt;
+
+            if (isPersianLike(targetLang)) {
+                finalOutputSrt = applyRtlToSrt(finalFixedSrt); // MODIFIED
+            }
+
+            if (finalOutputSrt && finalOutputSrt.trim() !== '') {
+                const blob = new Blob([finalOutputSrt], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                downloadLink.innerHTML = `<a href="${url}" download="translated_subtitle.srt">${getLocalizedString("download-subtitle-link")}</a>`;
+                progressTextEl.textContent = getLocalizedString('translation-complete-success', {successful: translatedSrtChunks.filter(c => c && !isTranslationError(c)).length, total: originalSrtChunks.length});
+            } else {
+                progressTextEl.textContent = getLocalizedString('translation-complete-no-download');
+                if (originalSrtChunks.length > 0 && translatedSrtChunks.filter(c => c && !isTranslationError(c)).length === 0) {
+                    showError('error-all-chunks-failed');
+                }
+            }
+            
+            chunkStatusEl.textContent = isRetry ? getLocalizedString('status-batch-retry-finished') : "";
+            timeEstimateEl.textContent = "";
+            showManualRetryIfNeeded();
+            if (isRetry && document.getElementById('retry-failed-chunks-btn')) {
+                document.getElementById('retry-failed-chunks-btn').disabled = false;
+                document.getElementById('retry-failed-chunks-btn').textContent = getLocalizedString('retry-failed-button');
+            }
         }
+
+
+        let originalSrtChunks = [];
+        let translatedSrtChunks = [];
 
         translateForm.addEventListener('submit', function(e) {
             e.preventDefault();
             progressBar.style.width = '0%';
-            progressText.textContent = '0% Complete';
-            chunkStatus.textContent = 'Processing chunk: 0/0';
-            timeEstimate.textContent = 'Estimated time: calculating...';
-            downloadLink.innerHTML = '';
-            errorMessage.style.display = 'none';
-            progressContainer.style.display = 'block';
-
-            const apiProvider = apiProviderSelect.value;
-            let apiKey;
-            switch(apiProvider) {
-                case 'gemini':
-                    apiKey = document.getElementById('gemini_api_key').value;
-                    break;
-                case 'openai':
-                    apiKey = document.getElementById('openai_api_key').value;
-                    break;
-                case 'deepseek':
-                    apiKey = document.getElementById('deepseek_api_key').value;
-                    break;
-                case 'custom':
-                    apiKey = document.getElementById('custom_api_key').value;
-                    break;
-            }
-            if (!apiKey) {
-                showError(`Please enter your ${apiProvider} API key.`);
-                return;
-            }
-
-            realTranslation();
+            progressTextEl.textContent = getLocalizedString('progress-text-initial');
+            chunkStatusEl.textContent = getLocalizedString('chunk-status-initial');
+            timeEstimateEl.textContent = getLocalizedString('time-estimate-initial');
+            processTranslationCycle(false);
         });
-
-        let lastChunks = [];
-        let lastTranslatedChunks = [];
-        let lastApiProvider = '';
-        let lastPrompt = '';
-        let lastTargetLang = '';
-        let lastTemperature = 0.7;
-        let lastModel = '';
-        let lastApiKey = '';
-
+        
         function showManualRetryIfNeeded() {
-            const failed = [];
-            for (let i = 0; i < lastTranslatedChunks.length; i++) {
-                if (!lastTranslatedChunks[i] || lastTranslatedChunks[i].startsWith('[ERROR]') || lastTranslatedChunks[i].trim() === '') {
-                    failed.push(i);
-                }
+            const failedIndices = [];
+            if (!translatedSrtChunks || translatedSrtChunks.length === 0) {
+                 if(document.getElementById('manual-retry-section')) document.getElementById('manual-retry-section').style.display = 'none'; return;
             }
-            if (failed.length === 0) {
-                document.getElementById('manual-retry-section').style.display = 'none';
-                return;
+            for (let i = 0; i < translatedSrtChunks.length; i++) {
+                if (isTranslationError(translatedSrtChunks[i])) failedIndices.push(i);
             }
+            const manualRetrySection = document.getElementById('manual-retry-section');
             const retryList = document.getElementById('retry-chunks-list');
+            if (!manualRetrySection || !retryList) return;
+
+            if (failedIndices.length === 0) { manualRetrySection.style.display = 'none'; return; }
+
             retryList.innerHTML = '';
-            failed.forEach(idx => {
+            failedIndices.forEach(idx => {
                 const div = document.createElement('div');
-                div.style.marginBottom = '8px';
+                div.style.cssText = 'margin-bottom:10px;padding:8px;border:1px solid #ccc;border-radius:4px;';
                 div.innerHTML = `
-                    <label>
-                        <input type="checkbox" class="retry-chunk-checkbox" value="${idx}" checked>
-                        <b>Chunk #${idx+1}</b>
+                    <label style="display:flex;align-items:center;margin-bottom:5px;">
+                        <input type="checkbox" class="retry-chunk-checkbox" value="${idx}" checked style="margin-right:8px;">
+                        <strong style="font-size:1.05em;">Chunk #${idx + 1} (click text to copy)</strong>
                     </label>
-                    <pre style="white-space:pre-wrap;background:#f8f8f8;padding:6px;border-radius:4px;font-size:0.95em;max-height:120px;overflow:auto;">${escapeHtml(lastChunks[idx])}</pre>
-                    <div style="color:#c00;font-size:0.9em;">${escapeHtml(lastTranslatedChunks[idx] || '')}</div>
-                `;
+                    <pre title="Click to copy source text" class="retry-source-text" data-chunk-index="${idx}" style="white-space:pre-wrap;background:#f0f0f0;padding:6px;border-radius:4px;font-size:0.9em;max-height:100px;overflow:auto;cursor:pointer;">${escapeHtml(originalSrtChunks[idx])}</pre>
+                    <div style="color:#c00;font-size:0.85em;margin-top:4px;white-space:pre-wrap;">${escapeHtml(translatedSrtChunks[idx] || '[No translation attempt or empty]')}</div>`;
                 retryList.appendChild(div);
             });
-            document.getElementById('manual-retry-section').style.display = '';
+            document.querySelectorAll('.retry-source-text').forEach(el => el.addEventListener('click', async (e) => {
+                const idx = parseInt(e.currentTarget.dataset.chunkIndex);
+                try { await navigator.clipboard.writeText(originalSrtChunks[idx]); e.currentTarget.style.border = '2px solid green'; setTimeout(() => e.currentTarget.style.border = '', 1000); } catch (err) { console.error('Copy failed:', err); }
+            }));
+            manualRetrySection.style.display = 'block';
         }
 
-        document.getElementById('retry-failed-chunks-btn').onclick = async function() {
-            const checkboxes = document.querySelectorAll('.retry-chunk-checkbox');
-            const selected = [];
-            checkboxes.forEach(cb => { if (cb.checked) selected.push(Number(cb.value)); });
-            if (selected.length === 0) return;
+        if(document.getElementById('retry-failed-chunks-btn')) {
+            document.getElementById('retry-failed-chunks-btn').onclick = async function() {
+                this.disabled = true;
+                this.textContent = getLocalizedString('status-retrying-selected-chunks');
+                await processTranslationCycle(true);
+            };
+        }
 
-            const apiProvider = apiProviderSelect.value;
-            let apiKey = '';
-            let model = '';
-            let customApiUrl = '';
-            let customExtraHeaders = '';
-            if (apiProvider === 'openai') {
-                apiKey = document.getElementById('openai_api_key').value;
-                model = document.getElementById('openai_model').value;
-            } else if (apiProvider === 'gemini') {
-                apiKey = document.getElementById('gemini_api_key').value;
-                model = document.getElementById('gemini_model').value;
-            } else if (apiProvider === 'deepseek') {
-                apiKey = document.getElementById('deepseek_api_key').value;
-                model = document.getElementById('deepseek_model').value;
-            } else if (apiProvider === 'custom') {
-                customApiUrl = document.getElementById('custom_api_url').value;
-                apiKey = document.getElementById('custom_api_key').value;
-                model = document.getElementById('custom_model').value;
-                customExtraHeaders = document.getElementById('custom_extra_headers').value;
-            }
-            const targetLang = document.getElementById('lang-input').value;
-            const temperature = parseFloat(document.getElementById('temperature').value);
-            const prompt = document.getElementById('translation_prompt').value;
-
-            progressContainer.style.display = 'block';
-            progressBar.style.width = '0%';
-            progressText.textContent = 'Retrying failed chunks...';
-            chunkStatus.textContent = '';
-            errorMessage.style.display = 'none';
-
-            for (let i = 0; i < selected.length; i++) {
-                const idx = selected[i];
-                try {
-                    let translated = '';
-                    liveBox.style.display = 'block';
-                    liveInput.textContent = lastChunks[idx];
-                    liveOutput.textContent = '...translating...';
-
-                    if (apiProvider === 'openai') {
-                        translated = await translateWithOpenAI(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
-                    } else if (apiProvider === 'deepseek') {
-                        translated = await translateWithDeepseek(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
-                    } else if (apiProvider === 'gemini') {
-                        translated = await translateWithGemini(apiKey, model, prompt, targetLang, lastChunks[idx], temperature);
-                    } else if (apiProvider === 'custom') {
-                        translated = await translateWithCustom(customApiUrl, apiKey, model, prompt, targetLang, lastChunks[idx], temperature, customExtraHeaders);
-                    } else {
-                        lastTranslatedChunks[idx] = '[ERROR]: Translation provider not supported.';
-                        liveOutput.textContent = lastTranslatedChunks[idx];
-                        continue;
-                    }
-                    if (translated && !translated.startsWith('[ERROR]')) {
-                        lastTranslatedChunks[idx] = translated.trim();
-                        liveOutput.textContent = lastTranslatedChunks[idx];
-                    }
-                } catch (err) {
-                    lastTranslatedChunks[idx] = `[ERROR]: ${err.message || err}`;
-                    liveOutput.textContent = lastTranslatedChunks[idx];
-                }
-                progressBar.style.width = Math.round(((i+1)/selected.length)*100) + '%';
-            }
-
-            liveInput.textContent = '';
-            liveOutput.textContent = '';
-            liveBox.style.display = 'none';
-
-            showManualRetryIfNeeded();
-
-            const merged = mergeChunks(lastTranslatedChunks);
-            const fixedSrt = fixSrtStructure(merged);
-            let outputSrt = fixedSrt;
-            if (/fa|farsi|persian/i.test(document.getElementById('lang-input').value)) {
-                outputSrt = applyRtlToSrt(fixedSrt);
-            }
-            const blob = new Blob([outputSrt], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            downloadLink.innerHTML = `
-                <a href="${url}" download="translated_subtitle.srt">
-                    <i class="fas fa-download"></i> Download Translated Subtitle
-                </a>
-            `;
-            progressText.textContent = "Retry complete!";
-            setTimeout(() => { progressContainer.style.display = 'none'; }, 1000);
-        };
 
         themeToggle.addEventListener('click', toggleTheme);
-
-        (function() {
-            const isDark = localStorage.getItem('darkMode') === 'true';
-            if (isDark) {
-                document.body.classList.add('dark-mode');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                document.body.classList.remove('dark-mode');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            }
-        })();
-
-        clearMemoryButton.addEventListener('click', function() {
-            [
-                'gemini_api_key', 'openai_api_key', 'deepseek_api_key', 'custom_api_key',
-                'remember_gemini_key', 'remember_openai_key', 'remember_deepseek_key', 'remember_custom_key'
-            ].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    if (el.type === 'checkbox') el.checked = false;
-                    else el.value = '';
-                }
-                localStorage.removeItem(id);
+        if (languageToggle) {
+            languageToggle.addEventListener('click', () => {
+                setLanguage(currentLang === 'en' ? 'fa' : 'en');
             });
-            alert('Translation memory and API keys cleared.');
-        });
-
-        // Deepseek translation function (API compatible with OpenAI)
-        async function translateWithDeepseek(apiKey, model, prompt, targetLang, chunk, temperature) {
-            const systemPrompt = prompt + `\nTarget language: ${targetLang}`;
-            const userPrompt = `Translate the following subtitle lines to ${targetLang}:\n${chunk}`;
-            const body = {
-                model: model,
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: userPrompt }
-                ],
-                temperature: temperature,
-                max_tokens: 2048
-            };
-            
-            let endpoints = [
-                "https://api.deepseek.com/v1/chat/completions",
-                "https://api.deepseek.com/openai/v1/chat/completions"
-            ];
-            let lastError = "";
-            
-            for (let endpoint of endpoints) {
-                try {
-                    const resp = await fetch(endpoint, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": "Bearer " + apiKey
-                        },
-                        body: JSON.stringify(body)
-                    });
-
-                    if (!resp.ok) {
-                        // بررسی خطاهای HTTP
-                        if (resp.status === 429) {
-                            throw new Error("Rate limit exceeded. Please wait a moment and try again.");
-                        }
-                        if (resp.status === 401 || resp.status === 403) {
-                            throw new Error("Invalid API key or authorization failed.");
-                        }
-                        if (resp.status === 404) {
-                            throw new Error("API endpoint not found. Please check your configuration.");
-                        }
-                        
-                        // تلاش برای دریافت پیام خطای API
-                        let errText = await resp.text();
-                        try {
-                            const errObj = JSON.parse(errText);
-                            lastError = errObj.error?.message || errText;
-                        } catch {
-                            lastError = errText || `HTTP Error ${resp.status}`;
-                        }
-                        continue;
-                    }
-
-                    const data = await resp.json();
-                    let content = "";
-                    
-                    if (data.choices?.[0]) {
-                        content = data.choices[0].message?.content || data.choices[0].delta?.content || "";
-                    }
-
-                    if (typeof content === "string" && content.trim()) {
-                        return content.trim();
-                    }
-
-                    lastError = "Empty or invalid response from API";
-
-                } catch (err) {
-                    // مدیریت خطاهای شبکه
-                    if (err instanceof TypeError && err.message.includes('fetch')) {
-                        lastError = "Network error. Please check your internet connection.";
-                    } else {
-                        lastError = err.message || String(err);
-                    }
-                }
-            }
-
-            throw new Error(`API Error: ${lastError}`);
         }
 
-        // On YouTube URL input change, auto-fetch and fill SRT textarea
+
+        (function() { 
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) document.body.classList.add('dark-mode');
+            if (themeToggle) themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            if (apiProviderSelect) apiProviderSelect.dispatchEvent(new Event('change'));
+            setLanguage(currentLang); 
+        })();
+
+        if (clearMemoryButton) {
+            clearMemoryButton.addEventListener('click', function() {
+                ['gemini', 'openai', 'deepseek', 'custom'].forEach(p => {
+                    const keyEl = document.getElementById(`${p}_api_key`); if (keyEl) keyEl.value = '';
+                    const remEl = document.getElementById(`remember_${p}_key`); if (remEl) remEl.checked = false;
+                    localStorage.removeItem(`${p}ApiKey`); localStorage.removeItem(`remember${p.charAt(0).toUpperCase() + p.slice(1)}Key`);
+                });
+                alert(getLocalizedString('alert-keys-cleared'));
+            });
+        }
+        
+
         const youtubeUrlInput = document.getElementById('youtube_url');
         const srtTextArea = document.getElementById('srt_text');
-
-        youtubeUrlInput.addEventListener('change', async function() {
-            const url = youtubeUrlInput.value.trim();
-            if (!url) return;
-            srtTextArea.value = '';
-            srtTextArea.placeholder = 'در حال دریافت زیرنویس...';
-            youtubeUrlInput.disabled = true;
-            try {
-                let srt = '';
-                let found = false;
-                const videoIdMatch = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})(?:[&?]|$)/);
-                if (!videoIdMatch) throw new Error("Invalid YouTube URL.");
+        if (youtubeUrlInput && srtTextArea) {
+            youtubeUrlInput.addEventListener('input', async function() { // Changed to 'input' for responsiveness
+                const url = youtubeUrlInput.value.trim(); if (!url) return;
+                const videoIdMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+                if (!videoIdMatch || !videoIdMatch[1]) return;
                 const videoId = videoIdMatch[1];
-
-                // Try youtubetranscript.com (JSON)
+                srtTextArea.value = ''; srtTextArea.placeholder = 'Fetching subtitles...'; youtubeUrlInput.disabled = true;
                 try {
-                    const resp = await fetch(`https://youtubetranscript.com/?server=1&lang=en&video=${videoId}`);
-                    if (resp.ok) {
-                        const data = await resp.json();
-                        if (Array.isArray(data) && data.length > 0 && data[0].text) {
-                            for (let i = 0; i < data.length; i++) {
-                                const entry = data[i];
-                                const start = entry.start;
-                                const dur = entry.dur || 2;
-                                const end = start + dur;
-                                function secToSrtTime(sec) {
-                                    const h = String(Math.floor(sec / 3600)).padStart(2, "0");
-                                    const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
-                                    const s = String(Math.floor(sec % 60)).padStart(2, "0");
-                                    const ms = String(Math.floor((sec - Math.floor(sec)) * 1000)).padStart(3, "0");
-                                    return `${h}:${m}:${s},${ms}`;
-                                }
-                                srt += `${i + 1}\n${secToSrtTime(start)} --> ${secToSrtTime(end)}\n${entry.text}\n\n`;
-                            }
-                            found = true;
-                        }
+                    let srt = '', found = false;
+                    try { 
+                        const r = await fetch(`https://youtubetranscript.com/?server_host=https://www.youtubetranscript.com&video_id=${videoId}&language=en&format=json`);
+                        if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length > 0 && d[0].text) {
+                            srt = d.map((e,i) => { const s=parseFloat(e.start), dr=parseFloat(e.duration||e.dur||2), ed=s+dr; const tF = sc => `${String(Math.floor(sc/3600)).padStart(2,"0")}:${String(Math.floor((sc%3600)/60)).padStart(2,"0")}:${String(Math.floor(sc%60)).padStart(2,"0")},${String(Math.floor((sc-Math.floor(sc))*1000)).padStart(3,"0")}`; return `${i+1}\n${tF(s)} --> ${tF(ed)}\n${e.text.trim()}\n`; }).join('\n'); found = true; } }
+                    } catch (e) { console.warn("youtubetranscript.com failed:", e); }
+                    
+                    if (!found) { 
+                        try { const r = await fetch(`https://video.google.com/timedtext?lang=en&v=${videoId}&fmt=srv3`); if (r.ok) { const xT = await r.text(); if (xT.includes('<text')) {
+                            const p = new DOMParser(), xD = p.parseFromString(xT, "text/xml"), ts = xD.getElementsByTagName("text");
+                            srt = Array.from(ts).map((t,i) => { const s=parseFloat(t.getAttribute("start")), dr=parseFloat(t.getAttribute("dur")||"2"), ed=s+dr; let txt = (t.textContent||"").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/<br\s*\/?>/gi,'\n').trim(); if(!txt) return null; const tF = sc => `${String(Math.floor(sc/3600)).padStart(2,"0")}:${String(Math.floor((sc%3600)/60)).padStart(2,"0")}:${String(Math.floor(sc%60)).padStart(2,"0")},${String(Math.floor((sc-Math.floor(sc))*1000)).padStart(3,"0")}`; return `${i+1}\n${tF(s)} --> ${tF(ed)}\n${txt}\n`; }).filter(Boolean).join('\n'); if(srt) found = true; } }
+                        } catch (e) { console.warn("Google timedtext failed:", e); }
                     }
-                } catch (e) { /* ignore */ }
 
-                // Try youtube.com API (timedtext, for auto captions)
-                if (!found) {
-                    try {
-                        // Try to get auto-generated captions (en)
-                        const timedtextUrl = `https://video.google.com/timedtext?lang=en&v=${videoId}&fmt=srv3`;
-                        const resp = await fetch(timedtextUrl);
-                        if (resp.ok) {
-                            const xml = await resp.text();
-                            if (xml.includes('<text')) {
-                                // Convert XML to SRT
-                                let parser = new DOMParser();
-                                let xmlDoc = parser.parseFromString(xml, "text/xml");
-                                let texts = xmlDoc.getElementsByTagName("text");
-                                let srtLines = [];
-                                for (let i = 0; i < texts.length; i++) {
-                                    const t = texts[i];
-                                    let start = parseFloat(t.getAttribute("start"));
-                                    let dur = parseFloat(t.getAttribute("dur") || "2");
-                                    let end = start + dur;
-                                    let text = (t.textContent || "").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
-                                    function secToSrtTime(sec) {
-                                        const h = String(Math.floor(sec / 3600)).padStart(2, "0");
-                                        const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
-                                        const s = String(Math.floor(sec % 60)).padStart(2, "0");
-                                        const ms = String(Math.floor((sec - Math.floor(sec)) * 1000)).padStart(3, "0");
-                                        return `${h}:${m}:${s},${ms}`;
-                                    }
-                                    srtLines.push(`${i+1}\n${secToSrtTime(start)} --> ${secToSrtTime(end)}\n${text}\n`);
-                                }
-                                if (srtLines.length > 0) {
-                                    srt = srtLines.join('\n');
-                                    found = true;
-                                }
-                            }
-                        }
-                    } catch (e) { /* ignore */ }
-                }
+                    if (!found || !srt || !/\d{2}:\d{2}:\d{2},\d{3}/.test(srt)) { // Basic SRT format check
+                        srtTextArea.placeholder = getLocalizedString('paste-srt-label'); alert(getLocalizedString('alert-subtitle-fetch-failed'));
+                    } else {
+                        srtTextArea.value = fixSrtStructure(srt); // Apply fixSrtStructure here
+                        srtTextArea.placeholder = getLocalizedString('paste-srt-label');
+                        if(textMethodRadio) textMethodRadio.checked = true; 
+                        if(fileInputSection) fileInputSection.style.display='none'; 
+                        if(textInputSection) textInputSection.style.display='block';
+                        srtTextArea.focus(); alert(getLocalizedString('alert-subtitle-fetch-success'));
+                    }
+                } catch (err) { 
+                    srtTextArea.value=''; srtTextArea.placeholder = getLocalizedString('paste-srt-label'); 
+                    alert(getLocalizedString('alert-subtitle-fetch-error', {errorMessage: err.message})); 
+                    console.error("YT fetch error:", err);
+                } finally { youtubeUrlInput.disabled = false; }
+            });
+        }
 
-                if (!found || !srt || !/\d{2}:\d{2}:\d{2},\d{3}/.test(srt)) {
-                    throw new Error('به زودی این قابلیت قابل دسترس خواهد شد.');
-                }
-                srtTextArea.value = srt;
-                srtTextArea.placeholder = 'Paste your SRT content here...';
-                document.querySelector('input[name="input_method"][value="text"]').checked = true;
-                document.getElementById('file-input').style.display = 'none';
-                document.getElementById('text-input').style.display = 'block';
-                srtTextArea.focus();
-            } catch (err) {
-                srtTextArea.value = '';
-                srtTextArea.placeholder = 'Paste your SRT content here...';
-                alert('به زودی این قابلیت قابل دسترس خواهد شد.');
-                youtubeUrlInput.disabled = false;
-            }
+
+        document.addEventListener('DOMContentLoaded', () => { 
+            ['gemini','openai','deepseek','custom'].forEach(p => {
+                const kI = document.getElementById(`${p}_api_key`), rC = document.getElementById(`remember_${p}_key`);
+                if(kI && rC){ const rK=localStorage.getItem(`${p}ApiKey`), sR=localStorage.getItem(`remember${p[0].toUpperCase()+p.slice(1)}Key`)==='true';
+                if(sR && rK){ kI.value=rK; rC.checked=true; }
+                rC.addEventListener('change',e=>{ localStorage.setItem(`remember${p[0].toUpperCase()+p.slice(1)}Key`,e.target.checked); if(e.target.checked&&kI.value)localStorage.setItem(`${p}ApiKey`,kI.value); else if(!e.target.checked)localStorage.removeItem(`${p}ApiKey`); });
+                kI.addEventListener('input',()=>{ if(rC.checked&&kI.value)localStorage.setItem(`${p}ApiKey`,kI.value); else if(rC.checked&&!kI.value)localStorage.removeItem(`${p}ApiKey`); }); }
+            });
         });
+
     </script>
 </body>
 </html>
